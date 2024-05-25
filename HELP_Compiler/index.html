@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LTK SPF Converter Help</title>
+    <style>
+        body {
+            position: relative;
+            padding-top: 50px; /* Ensure content doesn't overlap the icon */
+        }
+        .icon-container {
+            position: absolute;
+            top: 10px;
+            left: 10px; /* Position the icon on the left */
+        }
+        .icon-container img {
+            width: 50px; /* Adjust the size of the icon */
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="icon-container">
+        <img src="crown.png" alt="Icon">
+    </div>
+    <h1>LTK SPF Converter Help</h1>
+    <p>Welcome to the help documentation for the LTK SPF Converter application.</p>
+    <p>This program is designed to convert .spf files used in the HVM <i>(High Volume Manufacturing)</i> environment to Python files that are compatible with the PythonSV environment.</p>
+
+    <h2>Usage</h2>
+    <p>For detailed instructions on using the application, please refer to the corresponding sections below.</p>
+    <ul>
+        <li><a href="select_file.html">Selecting Input File/Folder</a></li>
+        <li><a href="select_output.html">Selecting Output Folder</a></li>
+        <li><a href="conversion_options.html">Conversion Options</a></li>
+        <li><a href="convert.html">Converting Files</a></li>
+    </ul>
+
+    <h2>Workflow</h2>
+    <p>Follow these steps to use the LTK SPF Converter:</p>
+    <ol>
+        <li>Open the application by running the Python script.</li>
+        <li>In the "Source" section, select whether you want to convert a file or a folder by choosing the appropriate radio button.</li>
+        <li>Click on the "Select File / Folder" button to open a file dialog and choose the file or folder you want to convert.</li>
+        <li>Once selected, the path of the file or folder will appear in the combo box next to the button.</li>
+        <li>In the "Output" section, click on the "Select Output Folder" button to choose where you want the converted files to be saved.</li>
+        <li>Alternatively, you can click on the "Default Output Folder" button to set a default folder for the output.</li>
+        <li>Specify any additional conversion options in the "Options" section:
+            <ul>
+                <li>Choose the CPU generation from the "CPU Gen" dropdown menu.</li>
+                <li>Check the "Use itpp Comments" checkbox if you want to include itpp comments in the conversion.</li>
+            </ul>
+        </li>
+        <li>Once all options are set, click on the "Convert" button in the bottom right corner to start the conversion process.</li>
+        <li>A message box will appear showing the details of the conversion, including the source and destination paths, CPU generation, and whether itpp comments are used.</li>
+    </ol>
+
+    <h2>Tips</h2>
+    <ul>
+        <li>The destination folder is set automatically when the source file or folder is selected.</li>
+        <li>Make sure to check the conversion details in the message box before proceeding.</li>
+        <li>You can clear the history of selected files and folders from the top menu.</li>
+    </ul>
+</body>
+</html>
