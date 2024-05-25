@@ -1,10 +1,12 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
-import os, subprocess
+import os
+import subprocess
 import csv
 from datetime import datetime
 import threading
 from conversion_module import Converter
+
 
 class Converter_GUI():
     def __init__(self, root):
@@ -12,95 +14,123 @@ class Converter_GUI():
         self.create_history_file()
         self.read_history()
 
-        ## window top bar title
+        # window top bar title
         self.root = root
         self.root.title("LTK SPF Converter")
         self.root.minsize(1200, 260)  # Set the minimum window size
 
-        ## create the menu
+        # create the menu
         self.create_menu()
 
-        ## source frame
+        # source frame
         self.source_frame = tk.LabelFrame(root, text='Source')
         self.source_frame.pack(fill='x', pady=10, padx=5)
-        ## source text
+        # source text
         source_label = tk.Label(self.source_frame, text="Input:")
         source_label.pack(side='left', padx=0)
-        ## source radiobuttons
-        self.source_type = tk.StringVar(value='file')  # Variable to hold the source type
-        self.source_file_radiobutton = tk.Radiobutton(self.source_frame, text="File", variable=self.source_type, value='file', command=self.update_combobox)
+        # source radiobuttons
+        # Variable to hold the source type
+        self.source_type = tk.StringVar(value='file')
+        self.source_file_radiobutton = tk.Radiobutton(
+            self.source_frame, text="File", variable=self.source_type, value='file', command=self.update_combobox)
         self.source_file_radiobutton.pack(side='left')
-        self.source_folder_radiobutton = tk.Radiobutton(self.source_frame, text="Folder", variable=self.source_type, value='folder', command=self.update_combobox)
+        self.source_folder_radiobutton = tk.Radiobutton(
+            self.source_frame, text="Folder", variable=self.source_type, value='folder', command=self.update_combobox)
         self.source_folder_radiobutton.pack(side='left')
-        ## select button
-        self.select_button = tk.Button(self.source_frame, text="Select File / Folder", command=self.select_file_folder)
+        # select button
+        self.select_button = tk.Button(
+            self.source_frame, text="Select File / Folder", command=self.select_file_folder)
         self.select_button.pack(side='left', padx=2, pady=5)
-        ## source select combobox
-        self.source_select_combobox = ttk.Combobox(self.source_frame)
+        # source select combobox
+        self.source_select_combobox = ttk.Combobox(
+            self.source_frame, postcommand=self.update_source_history_on_select)
         self.source_select_combobox.pack(fill='x', expand=True, padx=2)
-        ## initially populate the combobox with file history
+        # initially populate the combobox with file history
         self.update_combobox()
 
-        ## destination frame
+        # destination frame
         self.dest_frame = tk.LabelFrame(root, text='Destination')
         self.dest_frame.pack(fill='x', pady=10, padx=5)
-        ## default output folder button
-        self.default_output_button = tk.Button(self.dest_frame, text="Default Output Folder", command=self.set_default_output_folder)
+        # default output folder button
+        self.default_output_button = tk.Button(
+            self.dest_frame, text="Default Output Folder", command=self.set_default_output_folder)
         self.default_output_button.pack(side='left', padx=3, pady=5)
-        ## destination select button
-        self.dest_select_button = tk.Button(self.dest_frame, text="Select Output Folder", command=self.select_output_folder)
+        # destination select button
+        self.dest_select_button = tk.Button(
+            self.dest_frame, text="Select Output Folder", command=self.select_output_folder)
         self.dest_select_button.pack(side='left', padx=2, pady=5)
-        ## destination select combobox
-        self.dest_select_combobox = ttk.Combobox(self.dest_frame)
+        # destination select combobox
+        self.dest_select_combobox = ttk.Combobox(
+            self.dest_frame, postcommand=self.update_dest_history_on_select)
         self.dest_select_combobox.pack(fill='x', expand=True, padx=2)
-        ## initially populate the combobox with destination history
+        # initially populate the combobox with destination history
         self.update_dest_combobox()
 
-        ## Bottom Frame
+        # Bottom Frame
         self.bottom_frame = tk.Frame(root)
         self.bottom_frame.pack(fill='x', pady=5, padx=5)
 
-        ## Bottom Left frame - Options
-        self.options_frame = tk.LabelFrame(self.bottom_frame, text="Options")  # make it a LabelFrame with the title 'Options'
+        # Bottom Left frame - Options
+        # make it a LabelFrame with the title 'Options'
+        self.options_frame = tk.LabelFrame(self.bottom_frame, text="Options")
         self.options_frame.pack(fill='x', padx=5, side='left', anchor='w')
-        ## CPU GEN combobox
+        # CPU GEN combobox
         self.spu_gen_frame = tk.Frame(self.options_frame)
         self.spu_gen_frame.pack()
         self.cpu_gen_label = tk.Label(self.spu_gen_frame, text="CPU Gen:")
         self.cpu_gen_label.pack(side='left', padx=5)
-        self.cpu_gen = ttk.Combobox(self.spu_gen_frame, values=["PTL", "LNL", "MTL-P", "MTL1"])
+        self.cpu_gen = ttk.Combobox(self.spu_gen_frame, values=[
+                                    "PTL", "LNL", "MTL-P", "MTL1"])
         self.cpu_gen.pack(padx=5)
         self.cpu_gen.set("PTL")
-        ## add 'Use itpp Comments' tick button to options frame
+        # add 'Use itpp Comments' tick button to options frame
         self.use_itpp = tk.IntVar()
-        self.use_itpp_checkbutton = tk.Checkbutton(self.options_frame, text="Use itpp Comments", variable=self.use_itpp)
+        self.use_itpp_checkbutton = tk.Checkbutton(
+            self.options_frame, text="Use itpp Comments", variable=self.use_itpp)
         self.use_itpp_checkbutton.pack(anchor='w')
 
-        ## Bottom right frame
+        # Bottom right frame
         self.buttons_frame = tk.Frame(self.bottom_frame)
         self.buttons_frame.pack(side='right', padx=10)
-        self.convert_button = tk.Button(self.buttons_frame, text="Convert", command=self.convert)
+        self.convert_button = tk.Button(
+            self.buttons_frame, text="Convert", command=self.convert)
         self.convert_button.pack(side='right', padx=10)
 
-        ## Progress Bar
+        # Progress Bar
         self.progress = tk.DoubleVar()
-        self.progress_bar = ttk.Progressbar(root, variable=self.progress, maximum=100)
+        self.progress_bar = ttk.Progressbar(
+            root, variable=self.progress, maximum=100)
         self.progress_bar.pack(fill='x', padx=5, pady=5)
 
-        ## Floor Frame
+        # Floor Frame
         self.floor_frame = tk.Frame(root)
-        self.floor_frame.pack(fill='x', pady=5, padx=5, side='bottom', anchor='s')
+        self.floor_frame.pack(fill='x', pady=5, padx=5,
+                              side='bottom', anchor='s')
 
-        ## Software Version
+        # Software Version
         self.version_label = tk.Label(self.floor_frame, text="2.0.0b1")
         self.version_label.pack(side='left')
 
-        ## Copyright
-        self.copyright_label = tk.Label(self.floor_frame, text="© 2024 Sivan Zusin")
+        # Copyright
+        self.copyright_label = tk.Label(
+            self.floor_frame, text="© 2024 Sivan Zusin")
         self.copyright_label.pack(side='right')
 
     def progress_callback(self, value):
         self.progress.set(value)
+
+    def update_source_history_on_select(self):
+        selected = self.source_select_combobox.get()
+        if selected:
+            self.update_history(self.source_file_history if self.source_type.get(
+            ) == 'file' else self.source_folder_history, selected)
+            self.update_combobox()  # Refresh the combobox with updated history
+
+    def update_dest_history_on_select(self):
+        selected = self.dest_select_combobox.get()
+        if selected:
+            self.update_history(self.dest_history, selected)
+            self.update_dest_combobox()  # Refresh the combobox with updated history
 
     def create_history_file(self):
         # Create history file named ltk_spf_history.csv if it does not exist
@@ -141,10 +171,10 @@ class Converter_GUI():
     def show_help(self):
         # Get the directory of the current script
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        
+
         # Search for a .chm file in the directory
         chm_files = [f for f in os.listdir(script_dir) if f.endswith('.chm')]
-        
+
         if chm_files:
             # If there are multiple .chm files, choose the first one
             chm_file = os.path.join(script_dir, chm_files[0])
@@ -183,14 +213,16 @@ class Converter_GUI():
         if self.source_type.get() == 'file':
             file_path = filedialog.askopenfilename()
             if file_path:
-                self.source_file_history.insert(0, file_path)  # Update source file history
+                self.source_file_history.insert(
+                    0, file_path)  # Update source file history
                 self.update_combobox()
                 self.source_select_combobox.set(file_path)
                 base_path = os.path.dirname(file_path)
         else:
             folder_path = filedialog.askdirectory()
             if folder_path:
-                self.source_folder_history.insert(0, folder_path)  # Update source folder history
+                self.source_folder_history.insert(
+                    0, folder_path)  # Update source folder history
                 self.update_combobox()
                 self.source_select_combobox.set(folder_path)
                 base_path = folder_path
@@ -199,7 +231,8 @@ class Converter_GUI():
             # Automatically set the default output folder after source selection
             timestamp = datetime.now().strftime("%d-%m-%y_%H-%M-%S")
             default_folder = os.path.join(base_path, f"LTK_{timestamp}")
-            self.dest_history.insert(0, default_folder)  # Update destination folder history
+            # Update destination folder history
+            self.dest_history.insert(0, default_folder)
             self.update_dest_combobox()
             self.dest_select_combobox.set(default_folder)
 
@@ -219,8 +252,6 @@ class Converter_GUI():
             self.update_dest_combobox()
             self.dest_select_combobox.set(default_folder)
             self.save_history()
-
-
 
     def set_default_output_folder(self):
         # Function to handle setting the default output folder
@@ -278,7 +309,7 @@ class Converter_GUI():
         if not dest_path:
             messagebox.showerror("Error", "Destination not selected!")
             return
-        
+
         # save history
         self.save_history()
 
@@ -287,8 +318,9 @@ class Converter_GUI():
         use_itpp = self.use_itpp.get()
 
         # Create an instance of the Converter class
-        converter = Converter(source_path, dest_path, cpu_gen, use_itpp, self.progress_callback)
-        
+        converter = Converter(source_path, dest_path,
+                              cpu_gen, use_itpp, self.progress_callback)
+
         # Run the conversion in a separate thread
         conversion_thread = threading.Thread(target=converter.run_conversion)
         conversion_thread.start()
@@ -299,6 +331,7 @@ class Converter_GUI():
                                         f"Destination: {dest_path}\n"
                                         f"CPU Gen: {cpu_gen}\n"
                                         f"Use itpp Comments: {'Yes' if use_itpp else 'No'}")
+
 
 if __name__ == "__main__":
     root = tk.Tk()
