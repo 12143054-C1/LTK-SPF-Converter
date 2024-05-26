@@ -19,6 +19,9 @@ class Converter_GUI():
         self.root.title("LTK SPF Converter")
         self.root.minsize(1200, 260)  # Set the minimum window size
 
+        # Set the window icon
+        self.set_window_icon()
+
         # create the menu
         self.create_menu()
 
@@ -104,8 +107,7 @@ class Converter_GUI():
 
         # Floor Frame
         self.floor_frame = tk.Frame(root)
-        self.floor_frame.pack(fill='x', pady=5, padx=5,
-                              side='bottom', anchor='s')
+        self.floor_frame.pack(fill='x', pady=5, padx=5, side='bottom', anchor='s')
 
         # Software Version
         self.version_label = tk.Label(self.floor_frame, text="2.0.0b1")
@@ -115,6 +117,19 @@ class Converter_GUI():
         self.copyright_label = tk.Label(
             self.floor_frame, text="© 2024 Sivan Zusin")
         self.copyright_label.pack(side='right')
+
+    def set_window_icon(self):
+        # Get the absolute path to the directory containing this script
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        # Construct the full path to the icon file
+        icon_path = os.path.join(script_dir, 'crown.ico')
+
+        # Load and set the icon
+        if os.path.exists(icon_path):
+            self.root.iconbitmap(icon_path)
+        else:
+            print(f"Icon file not found: {icon_path}")
+
 
     def progress_callback(self, value):
         self.progress.set(value)
@@ -209,6 +224,7 @@ class Converter_GUI():
             self.dest_select_combobox.set(default_folder)
 
     def select_file_folder(self):
+        base_path = ''
         # Function to handle file/folder selection
         if self.source_type.get() == 'file':
             file_path = filedialog.askopenfilename()
@@ -318,8 +334,7 @@ class Converter_GUI():
         use_itpp = self.use_itpp.get()
 
         # Create an instance of the Converter class
-        converter = Converter(source_path, dest_path,
-                              cpu_gen, use_itpp, self.progress_callback)
+        converter = Converter(source_path, dest_path, cpu_gen, use_itpp, self.progress_callback)
 
         # Run the conversion in a separate thread
         conversion_thread = threading.Thread(target=converter.run_conversion)

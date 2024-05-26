@@ -7,7 +7,7 @@ def week_num():
     work_week = date.strftime("%W")
     week_day = (date.isoweekday() % 7) + 1  # Convert from ISO weekday (1-7) to custom weekday (0-6)
     if week_day == 1:
-       work_week = str(int(work_week) + 1)
+        work_week = str(int(work_week) + 1)
     year = str(date.year)[-2:]  # Extract the last two digits of the year
 
     date_format = "ww{}_{:d}'{}".format(work_week, week_day, year)
