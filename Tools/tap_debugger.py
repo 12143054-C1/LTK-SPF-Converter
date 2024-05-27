@@ -33,27 +33,27 @@ class Debugger:
                                 register_names.add(register_name)
         
         # Write unique tap names to taps.txt
-        with open(r'sio\LNL\sio_dv\users\szusin\taps.txt', 'w') as taps_file:
+        with open(r'C:\pythonsv\LTK SPF Converter\Tools\taps.txt', 'w') as taps_file:
             for tap_name in sorted(tap_names):  # Sort to make it organized
                 taps_file.write(tap_name + '\n')
         
         # Write unique register names to regs.txt
-        with open(r'sio\LNL\sio_dv\users\szusin\regs.txt', 'w') as regs_file:
+        with open(r'C:\pythonsv\LTK SPF Converter\Tools\regs.txt', 'w') as regs_file:
             for register_name in sorted(register_names):  # Sort to make it organized
                 regs_file.write(register_name + '\n')
 
     def generate_sv_copypasta(self):
         regs = []
-        with open(r'sio\LNL\sio_dv\users\szusin\regs.txt', 'r') as regs_file:
+        with open(r'C:\pythonsv\LTK SPF Converter\Tools\regs.txt', 'r') as regs_file:
             regs = regs_file.readlines()
             for i,reg in enumerate(regs):
                 regs[i] = f'print(sv.socket0.soc.search("{reg[:-1]}"))\n'
-        with open(r'sio\LNL\sio_dv\users\szusin\copypasta_regs.txt', 'w') as regs_file:
+        with open(r'C:\pythonsv\LTK SPF Converter\Tools\copypasta_regs.txt', 'w') as regs_file:
             regs_file.writelines(regs)
     
     def output_dict_from_copypasta_response(self):
         taps = set()
-        with open(r'sio\LNL\sio_dv\users\szusin\copypasta_response.txt', 'r') as response_file:
+        with open(r'C:\pythonsv\LTK SPF Converter\Tools\copypasta_response.txt', 'r') as response_file:
             lines = response_file.readlines()
             for line in lines:
                 tap = line.split("'")[1]
@@ -68,7 +68,7 @@ class Debugger:
     def create_tap_dict(self):
         self.output_dict_from_copypasta_response()
         spf_taps = []
-        with open(r'sio\LNL\sio_dv\users\szusin\taps.txt', 'r') as taps_file:
+        with open(r'C:\pythonsv\LTK SPF Converter\Tools\taps.txt', 'r') as taps_file:
             spf_taps = taps_file.readlines()
         content = "\n"
         for spf_tap in spf_taps:

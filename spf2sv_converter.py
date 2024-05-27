@@ -1,3 +1,11 @@
+#############################
+# Module name: spf2sv_converter.py
+# Description: This module provides functions and classes to translate SPF files to PythonSV files.
+#              It clones the file structure of the input directory to the output directory, applies
+#              various modifications to the translated files, and logs the process. It supports optional
+#              configuration for CPU generation and weekly folder creation.
+#############################
+
 import os, sys, datetime, re
 
 

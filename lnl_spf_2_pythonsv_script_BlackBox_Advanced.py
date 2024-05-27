@@ -1,12 +1,13 @@
-#-------------------------------------------------------------------------------
-# Name:        module1
-# Purpose:
-#
-# Author:      szusin
-#
-# Created:     11/10/2022
-# Copyright:   (c) szusin 2024
-#-------------------------------------------------------------------------------
+#############################
+# Module name: lnl_spf_2_pythonsv_script_BlackBox_Advanced.py
+# Description: This module is designed to convert SPF (Serial Programming File) scripts into
+#              PythonSV scripts for use in validation and testing environments.
+#              It supports direct register access, comparison, and manipulation of register fields,
+#              and includes functionality for handling different CPU generations and their specific
+#              register access methods. The script also provides utilities for timing control, comment handling,
+#              and conditional execution based on register values. It is tailored for use in Intel's validation processes,
+#              particularly for the Lunar Lake (LNL) and other specified CPU generations.
+#############################
 
 #---------######################################################################
 # IMPORTS ######################################################################

@@ -1,3 +1,12 @@
+#############################
+# Module name: LTK_SPF_Converter_V2.pyw
+# Description: This module provides a graphical user interface for converting LTK SPF files using various options. 
+#              The GUI includes functionalities for selecting source files or folders, choosing destination folders, 
+#              setting CPU generation options, and enabling or disabling ITPP comments. The conversion process is 
+#              handled in a separate thread, and progress is shown via a progress bar. The module also maintains 
+#              a history of source and destination paths for convenience.
+#############################
+
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import os
@@ -33,12 +42,12 @@ class Converter_GUI():
         source_label.pack(side='left', padx=0)
         # source radiobuttons
         # Variable to hold the source type
-        self.source_type = tk.StringVar(value='file')
+        self.source_type = tk.StringVar(value='Folder')
         self.source_file_radiobutton = tk.Radiobutton(
-            self.source_frame, text="File", variable=self.source_type, value='file', command=self.update_combobox)
+            self.source_frame, text="File", variable=self.source_type, value='file', command=self.update_combobox, state='disabled') ############### disabled in beta 1 release
         self.source_file_radiobutton.pack(side='left')
         self.source_folder_radiobutton = tk.Radiobutton(
-            self.source_frame, text="Folder", variable=self.source_type, value='folder', command=self.update_combobox)
+            self.source_frame, text="Folder", variable=self.source_type, value='Folder', command=self.update_combobox)
         self.source_folder_radiobutton.pack(side='left')
         # select button
         self.select_button = tk.Button(
@@ -103,7 +112,7 @@ class Converter_GUI():
         self.progress = tk.DoubleVar()
         self.progress_bar = ttk.Progressbar(
             root, variable=self.progress, maximum=100)
-        self.progress_bar.pack(fill='x', padx=5, pady=5)
+        # self.progress_bar.pack(fill='x', padx=5, pady=5) progress bar not shown. WIP!
 
         # Floor Frame
         self.floor_frame = tk.Frame(root)
@@ -138,7 +147,7 @@ class Converter_GUI():
         selected = self.source_select_combobox.get()
         if selected:
             self.update_history(self.source_file_history if self.source_type.get(
-            ) == 'file' else self.source_folder_history, selected)
+            ) == 'File' else self.source_folder_history, selected)
             self.update_combobox()  # Refresh the combobox with updated history
 
     def update_dest_history_on_select(self):
@@ -212,7 +221,7 @@ class Converter_GUI():
     def update_dest_based_on_source(self, event):
         source_path = self.source_select_combobox.get()
         if source_path:
-            if self.source_type.get() == 'file':
+            if self.source_type.get() == 'File':
                 base_path = os.path.dirname(source_path)
             else:
                 base_path = source_path
@@ -226,7 +235,7 @@ class Converter_GUI():
     def select_file_folder(self):
         base_path = ''
         # Function to handle file/folder selection
-        if self.source_type.get() == 'file':
+        if self.source_type.get() == 'File':
             file_path = filedialog.askopenfilename()
             if file_path:
                 self.source_file_history.insert(
@@ -276,7 +285,7 @@ class Converter_GUI():
             messagebox.showerror("Error", "Source not selected!")
             return
 
-        if self.source_type.get() == 'file':
+        if self.source_type.get() == 'File':
             base_path = os.path.dirname(source_path)
         else:
             base_path = source_path
@@ -305,7 +314,7 @@ class Converter_GUI():
 
     def update_combobox(self):
         # Update the combobox items based on the selected source type (file or folder)
-        if self.source_type.get() == 'file':
+        if self.source_type.get() == 'File':
             self.source_select_combobox['values'] = self.source_file_history
         else:
             self.source_select_combobox['values'] = self.source_folder_history

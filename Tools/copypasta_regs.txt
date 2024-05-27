@@ -1,0 +1,3 @@
+print(sv.socket0.soc.search("TAPLINKCFG"))
+print(sv.socket0.soc.search("USB4_PHY_COMMON_REG"))
+print(sv.socket0.soc.search("USB4_PHY_RESET_OVRD_REG"))
