@@ -1,5 +1,5 @@
 #############################
-# Module name: LTK_SPF_Converter_V2.pyw
+# Module name: LTK_SPF_Converter.pyw
 # Description: This module provides a graphical user interface for converting LTK SPF files using various options. 
 #              The GUI includes functionalities for selecting source files or folders, choosing destination folders, 
 #              setting CPU generation options, and enabling or disabling ITPP comments. The conversion process is 
