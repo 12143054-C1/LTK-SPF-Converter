@@ -283,7 +283,7 @@ class Command():
                 # Need to add comment "label: ..."
                 x = "##>>> SPF Label:    {}".format(row[6:-2])
                 self.printC1(x,output)
-            self.printC1("""last_label = {}""".format(row[6:-2].split(",")[0]),output)
+            self.printC1("""last_label = '{}'""".format(row.split('"')[1]),output)
             self.printC1("print(last_label)",output)
             self.print_last_label = True
             self.prev_row = row
@@ -764,6 +764,8 @@ class svReg():
                 i += 1
 
     def compare(self, fieldName, data, reg_name, compare_targets):
+        append = True
+        data_arr = bitfield2(data)
         if isinstance(fieldName, tuple):
             if len(fieldName) == 2:
                 index = fieldName
@@ -771,14 +773,16 @@ class svReg():
                 bit_offset = getattr(self.regName,fieldName[0].split("[")[0]).info['bitOffset']
                 index_len = getattr(self.regName,fieldName[0].split("[")[0]).info['bitWidth']
                 index = (int(str(bit_offset)) + int(str(index_len)) -1 ,  int(str(bit_offset)))
-                index =( int(str(index[0]))+ int(str(fieldName[1])) , int(str(index[0])) + int(str(fieldName[2])) + 1 )
+                index =( int(str(index[1]))+ int(str(fieldName[1])) , int(str(index[1])) + int(str(fieldName[2])))
+                data_arr = data_arr[ 0 : fieldName[2] - fieldName[1] + 1 ]
+                append = False
         else:
             bit_offset = getattr(self.regName,fieldName).info['bitOffset']
             index_len = getattr(self.regName,fieldName).info['bitWidth']
             index = (int(str(bit_offset)) + int(str(index_len)) -1 ,  int(str(bit_offset)))
-        data_arr = bitfield2(data)
-        while len(data_arr) < index_len:
-            data_arr.append("0")
+        if append:
+            while len(data_arr) < index_len:
+                data_arr.append("0")    
         if reg_compare(self.param_read_arr[index[1]:index[0]+1],data_arr):
             prGreen("### P A S S ###  compare %s = %s\\n                  compared fields: %s" %(reg_name, data, compare_targets))
         else:

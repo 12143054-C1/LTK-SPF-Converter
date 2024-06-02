@@ -119,7 +119,7 @@ class Converter_GUI():
         self.floor_frame.pack(fill='x', pady=5, padx=5, side='bottom', anchor='s')
 
         # Software Version
-        self.version_label = tk.Label(self.floor_frame, text="2.0.0b1")
+        self.version_label = tk.Label(self.floor_frame, text="2.0.1b1")
         self.version_label.pack(side='left')
 
         # Copyright
