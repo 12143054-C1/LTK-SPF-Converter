@@ -21,7 +21,7 @@ def week_num():
     date_format = "ww{}_{:d}'{}".format(work_week, week_day, year)
     return date_format
 
-def tcss_add_phy_index_and_post_boot(output_dir,conversion_time):
+def tcss_add_phy_index_and_post_boot(output_dir,conversion_time,CPUgen):
     def rewrite_file(file):
         lines = file.readlines()
         i=0
@@ -32,7 +32,8 @@ def tcss_add_phy_index_and_post_boot(output_dir,conversion_time):
                 lines[i] = 'def runConverted(phy_index=0, post_boot_config = True):\n'
                 break
             i+=1
-        parameters_select="""
+        if CPUgen == 'LNL':
+            parameters_select="""
     if post_boot_config:
         print("\\npost_boot_config - start")
         sv.socket0.soc.pmc.pmu.dfx_tcss_ctl.drv_tcss_hvmmode_en = 1
@@ -59,7 +60,43 @@ def tcss_add_phy_index_and_post_boot(output_dir,conversion_time):
         path_to_tcss_phy_env = sv.socket0.soc.tcss.soc_regs_wrapper.tcss_phy_env_i_2
         mg_index='0'
         index='2'
-            """
+                """
+        elif CPUgen == 'PTL':
+            parameters_select="""
+    if post_boot_config:
+        print("\\npost_boot_config - start")
+        sv.socket0.soc.pmc.pmu.dfx_tcss_ctl.drv_tcss_hvmmode_en = 1
+        print("\\npost_boot_config - end")
+
+    if phy_index == 0:
+        path_to_cdu_apollo_taplinkcfg = sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_0_cdu_apollo0.taplinkcfg
+        path_to_cdu_apollo_usb4_phy_common_reg = sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_0_cdu_apollo0.usb4_phy_common_reg
+        path_to_mg_tap_crsel = sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_0_mg00.crsel
+        path_to_tcss_phy_env = sv.socket0.soc.tcss.tcss_phy_env_i_0
+        mg_index='0'
+        index='0'
+    elif phy_index == 1:
+        path_to_cdu_apollo_taplinkcfg = sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_0_cdu_apollo1.taplinkcfg
+        path_to_cdu_apollo_usb4_phy_common_reg = sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_0_cdu_apollo1.usb4_phy_common_reg
+        path_to_mg_tap_crsel = sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_0_mg10.crsel
+        path_to_tcss_phy_env = sv.socket0.soc.tcss.tcss_phy_env_i_1
+        mg_index='1'
+        index='1'
+    elif phy_index == 2:
+        path_to_cdu_apollo_taplinkcfg = sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_1_cdu_apollo0.taplinkcfg
+        path_to_cdu_apollo_usb4_phy_common_reg = sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_1_cdu_apollo0.usb4_phy_common_reg
+        path_to_mg_tap_crsel = sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_1_mg00.crsel
+        path_to_tcss_phy_env = sv.socket0.soc.tcss.tcss_phy_env_i_2
+        mg_index='0'
+        index='2'
+    elif phy_index == 3:
+        path_to_cdu_apollo_taplinkcfg = sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_1_cdu_apollo1.taplinkcfg
+        path_to_cdu_apollo_usb4_phy_common_reg = sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_1_cdu_apollo1.usb4_phy_common_reg
+        path_to_mg_tap_crsel = sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_1_mg10.crsel
+        path_to_tcss_phy_env = sv.socket0.soc.tcss.tcss_phy_env_i_3
+        mg_index='3'
+        index='3'
+                """
         lines.insert(i+1,parameters_select)
         for line_num, line in enumerate(lines):
             lines[line_num] = lines[line_num].replace("(sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_0_cdu_apollo0.taplinkcfg","(path_to_cdu_apollo_taplinkcfg")
@@ -98,7 +135,7 @@ def tcss_add_phy_index_and_post_boot(output_dir,conversion_time):
             print("tcss post boot script added on: %s"%file_path)
     print("tcss_add_phy_index_and_post_boot DONE")
 
-def edp_add_post_boot(output_dir,conversion_time):
+def edp_add_post_boot(output_dir,conversion_time,CPUgen):
     def rewrite_file(file):
         lines = file.readlines()
         i=0
@@ -181,9 +218,9 @@ class run():
         self.direct_reg = direct_reg
         self.run_translation()
         print('') # prints newline seperator
-        tcss_add_phy_index_and_post_boot(self.output_dir,conversion_time)
+        tcss_add_phy_index_and_post_boot(self.output_dir,conversion_time,self.CPUgen)
         print('') # prints newline seperator
-        edp_add_post_boot(self.output_dir,conversion_time)
+        edp_add_post_boot(self.output_dir,conversion_time,self.CPUgen)
         print('') # prints newline seperator
         print(log_file_path)
 

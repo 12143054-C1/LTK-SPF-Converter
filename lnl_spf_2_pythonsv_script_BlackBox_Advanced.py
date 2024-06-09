@@ -184,9 +184,23 @@ class Command():
                 }
         elif self.CPU_Gen == "PTL":
             self.focus_tap_dict = {
-                r'DFX_PARISCLK_STAP' : r'soc.taps.dfx_parisclk.',
-                r'IPU_STAP'          : r'soc.taps.ipu.',
-                r'ISCLK_STAP'        : r'soc.taps.isclk.',
+                r'DFX_PARISCLK_STAP'                               : r'soc.taps.dfx_parisclk.',
+                r'IPU_STAP'                                        : r'soc.taps.ipu.',
+                r'ISCLK_STAP'                                      : r'soc.taps.isclk.',
+                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_0_MG0_TAP0'        : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_0_mg00.',
+                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_0_MG1_TAP0'        : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_0_mg10.',
+                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_1_MG0_TAP0'        : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_1_mg00.',
+                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_1_MG1_TAP0'        : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_1_mg10.',
+                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_0_CDU_APOLLO0_TAP' : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_0_cdu_apollo0.',
+                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_0_CDU_APOLLO1_TAP' : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_0_cdu_apollo1.',
+                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_1_CDU_APOLLO0_TAP' : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_1_cdu_apollo0.',
+                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_1_CDU_APOLLO1_TAP' : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_1_cdu_apollo1.',
+                r'TPSB_STAP'                                       : r'soc.taps.tpsb.',
+                r'DFX_PAR_IOM_TAPLINKNW_IOM_IOM_AONGTAP'           : r'soc.taps.dfx_par_iom_taplinknw_iom_iom_aong.',
+                r'GLUE_DFX_PAR_IOM_TAPLINKNW_PHY_FIA_0_MG0_TAP0'   : r'soc.taps.cltap.', #### !!!!!! IN QUESTION NEED TO APPROVE WITH MITRANI
+                r'GLUE_DFX_PAR_IOM_TAPLINKNW_PHY_FIA_0_MG1_TAP0'   : r'soc.taps.cltap.', #### !!!!!! IN QUESTION NEED TO APPROVE WITH MITRANI
+                r'GLUE_DFX_PAR_IOM_TAPLINKNW_PHY_FIA_1_MG0_TAP0'   : r'soc.taps.cltap.', #### !!!!!! IN QUESTION NEED TO APPROVE WITH MITRANI
+                r'GLUE_DFX_PAR_IOM_TAPLINKNW_PHY_FIA_1_MG1_TAP0'   : r'soc.taps.cltap.', #### !!!!!! IN QUESTION NEED TO APPROVE WITH MITRANI
                 }
             ### I M P O R T A N T !!!!!!!! YOU NEED TO ADD '.' AT THE END OF THE TRANSLATED TAP NAME, AND ALSO PAY ATTENTION TO THE FIRST ELEMENT IN THE HIERARCHY.
         self.taps_used = set()
@@ -310,7 +324,12 @@ class Command():
             # Set focus tap. goes to: sv.socket0.soc.taps.<focus_tap_sv>.register
             self.focus_tap_sv = []
             taps = row.replace("focus_tap ","").split(";")[0]
-            taps = taps.split()
+            if " " in taps:
+                taps = taps.split(" ")
+            elif "," in taps:
+                taps = taps.split(",")
+            else:
+                taps = [taps]
             for tap in taps:
                 try:
                     self.focus_tap_sv.append(self.focus_tap_dict[tap])
@@ -380,7 +399,10 @@ class Command():
                     self.printC1("reg{0} = svReg({1})".format(tap,self.full_reg_name),output)
                         
             ##get the indexes of the bits we want to write
-            data = "0" + row.split("=")[1].split(";")[0].split(r"'")[1].replace("h","x")
+            if "'b" in row or "'h" in row:
+                data = "0" + row.split("=")[1].split(";")[0].split(r"'")[1].replace("h","x")
+            else: 
+                data = hex(int(row.split("=")[1].split(";")[0]))
             if "[" in row.split(r"#")[0].split(r"=")[0]:
                 indexes = row.split("[")[1].split("]")[0]
                 if ":" in indexes:

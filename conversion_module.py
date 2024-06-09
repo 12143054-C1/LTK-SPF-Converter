@@ -20,7 +20,7 @@ class Converter:
         self.conversion_time = time.time()
 
     def run_conversion(self):
-        try:
+        #try:
             if not os.path.exists(self.dest_path):
                 os.makedirs(self.dest_path)
 
@@ -64,5 +64,5 @@ class Converter:
                 elif os.name == "posix":  ## Linux or macOS
                     subprocess.Popen(["xdg-open", destination_entry.get()])
 
-        except Exception as e:
-            print(f"Error during conversion: {e}")
+        # except Exception as e:
+        #     print(f"Error during conversion: {e}")
