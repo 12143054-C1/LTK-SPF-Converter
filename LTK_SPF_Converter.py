@@ -8,16 +8,72 @@
 #############################
 
 import tkinter as tk
-from tkinter import ttk, messagebox, filedialog
+from tkinter import ttk, messagebox, filedialog, simpledialog
+import tkinter.font as tkFont
 import os
+import sys
 import subprocess
 import csv
 from datetime import datetime
 import threading
 from conversion_module import Converter
 
-VERSION = '2.0.2'
+VERSION = '2.1.0'
 
+
+def send_email_with_attachments(to_email, subject, body, attachment_paths):
+    # Convert the list of attachment paths to a semicolon-separated string
+    attachments = ";".join(attachment_paths)
+
+    # Build the command to run the VBScript
+    command = [
+        'cscript.exe',
+        '//Nologo',  # Suppress script engine logo
+        'compose_email.vbs',  # Path to the VBScript
+        to_email,
+        subject,
+        body,
+        attachments
+    ]
+    # Run the command
+    subprocess.run(command)
+
+class CustomErrorDialog(simpledialog.Dialog):
+    def __init__(self, parent, title, text):
+        self.text = text
+        super().__init__(parent, title)
+    def body(self, master):
+        tk.Label(master, text=self.text).pack(pady=10)
+        return master
+    def buttonbox(self):
+        box = tk.Frame(self)
+        tk.Button(box, text="Send Log", width=10, command=self.send_log).pack(side=tk.LEFT, padx=5, pady=5)
+        tk.Button(box, text="Help", width=10, command=self.help).pack(side=tk.LEFT, padx=5, pady=5)
+        tk.Button(box, text="Cancel", width=10, command=self.cancel).pack(side=tk.LEFT, padx=5, pady=5)
+        self.bind("<Return>", self.send_log)
+        self.bind("<Escape>", self.cancel)
+        box.pack()
+    def send_log(self, event=None):
+        self.result = "send_log"
+        self.destroy()
+    def help(self, event=None):
+        self.result = "help"
+        self.destroy()
+    def cancel(self, event=None):
+        self.result = None
+        self.destroy()
+
+class TextRedirector:
+        def __init__(self, text_widget, tag="stdout"):
+            self.text_widget = text_widget
+            self.tag = tag
+        def write(self, str):
+            self.text_widget.configure(state='normal')
+            self.text_widget.insert('end', str, (self.tag,))
+            self.text_widget.configure(state='disabled')
+            self.text_widget.see('end')  # Scroll to the end
+        def flush(self):
+            pass
 
 class Converter_GUI():
     def __init__(self, root):
@@ -28,7 +84,7 @@ class Converter_GUI():
         # window top bar title
         self.root = root
         self.root.title("LTK SPF Converter")
-        self.root.minsize(1200, 290)  # Set the minimum window size
+        self.root.minsize(1200, 660)  # Set the minimum window size
 
         # Set the window icon
         self.set_window_icon()
@@ -120,14 +176,34 @@ class Converter_GUI():
             root, variable=self.progress, maximum=100)
         self.progress_bar.pack(fill='x', padx=5, pady=5)
 
-        # Floor Frame
-        self.floor_frame = tk.Frame(root)
-        self.floor_frame.pack(fill='x', pady=5, padx=5, side='bottom', anchor='s')
+        # Console Frame
+        self.console_frame = tk.Frame(root)
+        self.console_frame.pack(fill='both', expand=True, padx=0, pady=0)
+        monospace_font = tkFont.Font(family="Courier New", size=10)  # You can change the size as needed
+        self.console_text = tk.Text(
+            self.console_frame,
+            height=10,
+            state='disabled',
+            background='black',
+            foreground='#00FF00',
+            font=monospace_font,
+            )
+        self.console_text.pack(side='left', fill='both', expand=True)
+        # Create a Scrollbar and set it to the right of the Text widget
+        self.scrollbar = tk.Scrollbar(self.console_frame, command=self.console_text.yview)
+        self.scrollbar.pack(side='right', fill='y')
+        # Link the scrollbar to the text widget
+        self.console_text.config(yscrollcommand=self.scrollbar.set)
+        # Redirect standard output
+        sys.stdout = TextRedirector(self.console_text, "stdout")
 
+
+        # Floor Frame
+        self.floor_frame = tk.Frame(root,relief='ridge',borderwidth=2)
+        self.floor_frame.pack(fill='x', pady=0, padx=0, side='bottom', anchor='s')
         # Software Version
         self.version_label = tk.Label(self.floor_frame, text=VERSION)
         self.version_label.pack(side='left')
-
         # Copyright
         self.copyright_label = tk.Label(
             self.floor_frame, text="© 2024 Sivan Zusin")
@@ -248,17 +324,15 @@ class Converter_GUI():
         # Function to handle file/folder selection
         if self.source_type.get() == 'File':
             file_path = filedialog.askopenfilename()
-            if os.path.isfile(file_path):
-                self.source_file_history.insert(
-                    0, file_path)  # Update source file history
+            if file_path:
+                self.update_history(self.source_file_history,file_path)
                 self.update_combobox()
                 self.source_select_combobox.set(file_path)
                 base_path = os.path.dirname(file_path)
-        else: #if it's a Folder
+        else: # if it's a Folder
             folder_path = filedialog.askdirectory()
-            if os.path.isdir(folder_path):
-                self.source_folder_history.insert(
-                    0, folder_path)  # Update source folder history
+            if folder_path:
+                self.update_history(self.source_folder_history,folder_path)
                 self.update_combobox()
                 self.source_select_combobox.set(folder_path)
                 base_path = folder_path
@@ -336,17 +410,28 @@ class Converter_GUI():
         self.dest_select_combobox['values'] = self.dest_history
 
     def convert(self):
+        self.console_text.configure(state='normal')  # Temporarily enable the widget for editing
+        self.console_text.delete("1.0", "end")  # Delete all content from the start to the end
+        self.console_text.configure(state='disabled')  # Disable the widget again to make it read-only
         # Check if source and destination are selected, if not raise an error
-        source_path = self.source_select_combobox.get()
-        dest_path = self.dest_select_combobox.get()
-        if not source_path:
+        self.source_path = self.source_select_combobox.get()
+        self.dest_path = self.dest_select_combobox.get()
+        if not self.source_path:
             messagebox.showerror("Error", "Source not selected!")
             return
-        if not dest_path:
+        if not (os.path.isfile(self.source_path) or os.path.isdir(self.source_path)):
+            messagebox.showerror("Error", "Invalid source!")
+            return
+        if not self.dest_path:
             messagebox.showerror("Error", "Destination not selected!")
             return
 
-        # save history
+        # update and save history
+        if os.path.isfile(self.source_path):
+            self.update_history(self.source_file_history,self.source_path)
+        else:
+            self.update_history(self.source_folder_history,self.source_path)
+        self.update_history(self.dest_history,self.dest_path)
         self.save_history()
 
         # Gather conversion details
@@ -357,12 +442,13 @@ class Converter_GUI():
 
         # Create an instance of the Converter class
         converter = Converter(
-            source_path,
-            dest_path,
+            self.source_path,
+            self.dest_path,
             cpu_gen,
             use_itpp,
             self.progress_callback,
-            lambda: self.stop_requested
+            lambda: self.stop_requested,
+            self.on_conversion_complete  # Pass the completion callback
             )
         # Run the conversion in a separate thread
         self.conversion_thread = threading.Thread(target=converter.run_conversion)
@@ -371,21 +457,68 @@ class Converter_GUI():
         self.cancel_button.configure(state='normal')
         self.convert_button.configure(state='disabled')
 
-        # Display conversion details
-        messagebox.showinfo("Convert",  f"Convert button clicked.\n"
-                                        f"Source: {source_path}\n"
-                                        f"Destination: {dest_path}\n"
-                                        f"CPU Gen: {cpu_gen}\n"
-                                        f"Use itpp Comments: {'Yes' if use_itpp else 'No'}")
+        # # Display conversion details
+        # messagebox.showinfo("Convert",  f"Convert button clicked.\n"
+        #                                 f"Source: {source_path}\n"
+        #                                 f"Destination: {dest_path}\n"
+        #                                 f"CPU Gen: {cpu_gen}\n"
+        #                                 f"Use itpp Comments: {'Yes' if use_itpp else 'No'}")
     
+    def on_conversion_complete(self):
+        # This method will be called when conversion is complete
+        # Write log to logfile
+        # Schedule error handling to be run in the main thread
+        self.root.after(0, self.handle_error)
+
+    def handle_error(self):
+        self.console_log = self.console_text.get("1.0", "end-1c")
+        self.log_path = os.path.join(self.dest_path, 'conversion_log.txt')
+        with open(self.log_path, 'a') as logfile:
+            logfile.write(self.console_log)
+        if 'Tap not found' in self.console_log:  # Problem with conversion!
+            self.attachment_paths = []
+            lines  = self.console_log.split('\n')
+            for i,line in enumerate(lines):
+                if 'Tap not found' in line:
+                    self.attachment_paths.append(lines[i+1])
+            error_popup = CustomErrorDialog(self.root, "Problem Detected", "A problem was detected with the conversion. Would you like to send the log to the developer for debugging?")
+            response = error_popup.result
+            if response == "send_log":
+                self.send_log_to_developer(self.log_path)
+            elif response == "help":
+                self.show_help()
+        else:
+            messagebox.showinfo("Conversion Complete", "The file conversion process has finished.")
+
+        # Re-enable the Convert button and disable the Cancel button
+        self.convert_button.configure(state='normal')
+        self.cancel_button.configure(state='disabled')
+
+    def send_log_to_developer(self,log_path):
+        # Function to handle the sending of log files to the developer
+        # This is a placeholder for your actual sending logic, which might use email, FTP, HTTP POST, etc.
+        print("Log would be sent to the developer.")
+        to_email = "sivan.zusin@intel.com"
+        subject = "LTK SPF Conversion Problem"
+        body = "This is an automatically generated Email. The Log file and a sample of the problematic SPF files will be sent to the developer for debugging. A fixed will be soon provided to you.\n\nThanks."
+        self.attachment_paths.append(log_path)
+        send_email_with_attachments(to_email, subject, body, self.attachment_paths)
+
+    def show_help(self):
+        # Function to show help information
+        messagebox.showinfo("Help", "Please contact support@example.com for help with conversion issues.")
+
     def stop_convertion(self):
         self.stop_requested = True  # Signal the thread to stop
         #self.conversion_thread.join()  # Wait for the thread to finish
+        self.handle_error()
         self.cancel_button.configure(state='disabled')
         self.convert_button.configure(state='normal')
 
 
 if __name__ == "__main__":
+    original_stdout = sys.stdout
     root = tk.Tk()
     app = Converter_GUI(root)
     root.mainloop()
+    sys.stdout = original_stdout

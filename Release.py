@@ -34,6 +34,7 @@ def main():
     help_file = os.path.join(base_dir, "LTK_SPF_HELP.chm")
     history_file = os.path.join(base_dir, "ltk_spf_history.csv")
     script_path = os.path.join(base_dir, f"{module_name}.py")
+    email_sender_path = os.path.join(base_dir, "compose_email.vbs")
 
     # Define the output directory relative to the current directory
     output_dir = os.path.join(base_dir, "Release", f"{module_name}_{version_number}")
@@ -42,11 +43,12 @@ def main():
     os.makedirs(output_dir, exist_ok=True)
 
     # Run pyinstaller
-    os.system(f'pyinstaller --noconfirm --onefile --console --icon "{icon_path}" --add-data "{icon_path};." --add-data "{help_file};." --add-data "{history_file};." "{script_path}" --distpath "{output_dir}"')
+    os.system(f'pyinstaller --noconfirm --onefile --windowed --icon "{icon_path}" --add-data "{icon_path};." --add-data "{help_file};." --add-data "{history_file};." "{script_path}" --distpath "{output_dir}"')
 
     # Copy additional files to the output directory
     shutil.copy(icon_path, output_dir)
     shutil.copy(help_file, output_dir)
+    shutil.copy(email_sender_path, output_dir)
 
     # Create empty history file
     with open(os.path.join(output_dir,"ltk_spf_history.csv"),'w') as h:

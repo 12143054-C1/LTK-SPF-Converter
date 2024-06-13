@@ -76,11 +76,11 @@ def context_search_and_print(string, directory, Context_size):
                         # The Line
                         print(number_helper_10000(i) + ">>",line,end="")
                         # 10 lines after
-                        for j in range(0,Context_size+1):
+                        for j in range(1,Context_size+1):
                             if i+j < len(lines):
                                 print(number_helper_10000(i+j+1) + ": ", lines[i+j],end="")
-                        input("Press Enter to continue...")
-                        exit()
+                        #input("Press Enter to continue...")
+                        return
 
 
 
@@ -333,10 +333,12 @@ class Command():
             for tap in taps:
                 try:
                     self.focus_tap_sv.append(self.focus_tap_dict[tap])
+                    self.taps_used.add(self.focus_tap_dict[tap])
                 except KeyError as e:
-                    print("Tap not found: " + str(e))
+                    print(" Tap not found: " + str(e))
                     context_search_and_print(tap, self.Root_Path, 10)
-                self.taps_used.add(self.focus_tap_dict[tap])
+                    return 1
+                
 
         elif row.startswith(r"set"):
             # if self.direct_reg == True:
@@ -790,6 +792,7 @@ class svReg():
         data_arr = bitfield2(data)
         if isinstance(fieldName, tuple):
             if len(fieldName) == 2:
+                index_len = fieldName[0] - fieldName[1] + 1
                 index = fieldName
             else:
                 bit_offset = getattr(self.regName,fieldName[0].split("[")[0]).info['bitOffset']
@@ -848,9 +851,10 @@ def runConverted():
             else:
                 while row.startswith(" "):
                     row = row[1:]
-            self.comp_command(row_num,row,output,spf_file)
+            if self.comp_command(row_num,row,output,spf_file):
+                return
         #self.printC1("\nrunConverted()",output)
-        end_string = ',Converted Successfully !'
+        end_string = ' ,Converted Successfully !'
         print (end_string)
         output.close()
 
