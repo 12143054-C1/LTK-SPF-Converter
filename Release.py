@@ -10,13 +10,20 @@ def validate_version(version_input):
     return re.match(pattern, version_input) is not None
 
 def main():
-    # Get the release version from user input
-    while True:
-        version_input = input("Enter the release version (format x.x.xY or x.x.x): ").strip()
-        if validate_version(version_input):
-            break
-        else:
-            print("Invalid version format. Please enter a valid version.")
+    USER_INPUT = False
+    if USER_INPUT:
+        # Get the release version from user input
+        while True:
+            version_number = input("Enter the release version (format x.x.xY or x.x.x): ").strip()
+            if validate_version(version_number):
+                break
+            else:
+                print("Invalid version format. Please enter a valid version.")
+    else:
+        with open(r'LTK_SPF_Converter.py','r') as source:
+            for line in source:
+                if line.startswith('VERSION = '):
+                    version_number = line.split(' ')[-1].strip().strip("'")
 
     # Get the current working directory
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -29,7 +36,7 @@ def main():
     script_path = os.path.join(base_dir, f"{module_name}.py")
 
     # Define the output directory relative to the current directory
-    output_dir = os.path.join(base_dir, "Release", f"{module_name}_{version_input}")
+    output_dir = os.path.join(base_dir, "Release", f"{module_name}_{version_number}")
 
     # Create the output directory if it doesn't exist
     os.makedirs(output_dir, exist_ok=True)
@@ -40,7 +47,10 @@ def main():
     # Copy additional files to the output directory
     shutil.copy(icon_path, output_dir)
     shutil.copy(help_file, output_dir)
-    shutil.copy(history_file, output_dir)
+
+    # Create empty history file
+    with open(os.path.join(output_dir,"ltk_spf_history.csv"),'w') as h:
+        pass
 
     # Delete the .spec file and the build folder
     spec_file = os.path.join(base_dir, f"{module_name}.spec")

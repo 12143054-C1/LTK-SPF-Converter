@@ -8,16 +8,17 @@
 import os
 import time
 import subprocess
-import USE_EXAMPLE as ue
+import spf2sv_converter
 
 class Converter:
-    def __init__(self, source_path, dest_path, cpu_gen, use_itpp, progress_callback=None):
+    def __init__(self, source_path, dest_path, cpu_gen, use_itpp, progress_callback=None,stop_callback=None):
         self.source_path = source_path
         self.dest_path = dest_path
         self.cpu_gen = cpu_gen
         self.use_itpp = use_itpp
         self.progress_callback = progress_callback
         self.conversion_time = time.time()
+        self.stop_callback = stop_callback
 
     def run_conversion(self):
         #try:
@@ -25,26 +26,50 @@ class Converter:
                 os.makedirs(self.dest_path)
 
             if os.path.isdir(self.source_path):
-                files = os.listdir(self.source_path)
+                files_ = os.listdir(self.source_path)
+                files = [file for file in files_ if file.lower().endswith('.spf')]
                 total_files = len(files)
-                # for i, file in enumerate(files):   ############### loop disabled in beta 1 release
-                for i in [0]:
+                for i, file in enumerate(files):
+                    if self.stop_callback():
+                        print("STOPPED !!!!")
+                        ## Open the destination folder after conversion
+                        if os.path.exists(self.dest_path):
+                            self.dest_path = self.dest_path.replace("/","\\")
+                            ## Open the folder using the default file manager
+                        if os.name == "nt":  # Windows
+                            subprocess.Popen(f'explorer "{self.dest_path}"')
+                        elif os.name == "posix":  ## Linux or macOS
+                            subprocess.Popen(["xdg-open", destination_entry.get()])
+                        progress = 0
+                        self.progress_callback(progress)
+                        return
                     ## Folder conversion function here
-                    ue.use_example(
-                        self.use_itpp,
-                        self.source_path,
-                        self.dest_path,
-                        False,
-                        os.path.join(self.dest_path, 'conversion_log.txt'),
-                        self.conversion_time,
-                        self.cpu_gen)
+                    spf2sv_converter.run(
+                        direct_reg= self.use_itpp,
+                        conversion_time= self.conversion_time,
+                        log_file_path= os.path.join(self.dest_path, 'conversion_log.txt'),
+                        _week_folder_en= False,
+                        _input_dir= self.source_path,
+                        _input_file = os.path.join(self.source_path,file),
+                        _output_dir= self.dest_path,
+                        CPUgen= self.cpu_gen
+                    )
                     if self.progress_callback:
                         progress = int((i + 1) / total_files * 100)
                         self.progress_callback(progress)
             else:
                 ## File conversion function here
                 # Simulate conversion for a single file
-                time.sleep(0.1)  # Simulating a long-running process
+                spf2sv_converter.run(
+                        direct_reg= self.use_itpp,
+                        conversion_time= self.conversion_time,
+                        log_file_path= os.path.join(self.dest_path, 'conversion_log.txt'),
+                        _week_folder_en= False,
+                        _input_dir= os.path.dirname(self.source_path),
+                        _input_file = self.dest_path,
+                        _output_dir= self.dest_path,
+                        CPUgen= self.cpu_gen
+                    )
                 if self.progress_callback:
                     self.progress_callback(100)
             

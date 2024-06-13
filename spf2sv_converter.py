@@ -21,7 +21,7 @@ def week_num():
     date_format = "ww{}_{:d}'{}".format(work_week, week_day, year)
     return date_format
 
-def tcss_add_phy_index_and_post_boot(output_dir,conversion_time,CPUgen):
+def tcss_add_phy_index_and_post_boot(file_path_,output_dir,conversion_time,CPUgen):
     def rewrite_file(file):
         lines = file.readlines()
         i=0
@@ -98,12 +98,20 @@ def tcss_add_phy_index_and_post_boot(output_dir,conversion_time,CPUgen):
         index='3'
                 """
         lines.insert(i+1,parameters_select)
-        for line_num, line in enumerate(lines):
-            lines[line_num] = lines[line_num].replace("(sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_0_cdu_apollo0.taplinkcfg","(path_to_cdu_apollo_taplinkcfg")
-            lines[line_num] = lines[line_num].replace('("kill_mg0_tap0_tclk_out"',r'("kill_mg%s_tap0_tclk_out"%mg_index')
-            lines[line_num] = lines[line_num].replace('(sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_0_cdu_apollo0.usb4_phy_common_reg','(path_to_cdu_apollo_usb4_phy_common_reg')
-            lines[line_num] = lines[line_num].replace('(sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_0_mg0_tap0.crsel','(path_to_mg_tap_crsel')
-            lines[line_num] = lines[line_num].replace('"TCSS/soc_regs_wrapper/tcss_phy_env_i_0','f"TCSS/soc_regs_wrapper/tcss_phy_env_i_{str(phy_index)}')
+        if CPUgen == 'LNL':
+            for line_num, line in enumerate(lines):
+                lines[line_num] = lines[line_num].replace("(sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_0_cdu_apollo0.taplinkcfg","(path_to_cdu_apollo_taplinkcfg")
+                lines[line_num] = lines[line_num].replace('("kill_mg0_tap0_tclk_out"',r'("kill_mg%s_tap0_tclk_out"%mg_index')
+                lines[line_num] = lines[line_num].replace('(sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_0_cdu_apollo0.usb4_phy_common_reg','(path_to_cdu_apollo_usb4_phy_common_reg')
+                lines[line_num] = lines[line_num].replace('(sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_0_mg0_tap0.crsel','(path_to_mg_tap_crsel')
+                lines[line_num] = lines[line_num].replace('"TCSS/soc_regs_wrapper/tcss_phy_env_i_0','f"TCSS/soc_regs_wrapper/tcss_phy_env_i_{str(phy_index)}')
+        elif CPUgen == 'PTL':
+            for line_num, line in enumerate(lines):
+                lines[line_num] = lines[line_num].replace("(sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_0_cdu_apollo0.taplinkcfg","(path_to_cdu_apollo_taplinkcfg")
+                lines[line_num] = lines[line_num].replace('("kill_mg0_tap0_tclk_out"',r'("kill_mg%s_tap0_tclk_out"%mg_index')
+                lines[line_num] = lines[line_num].replace('(sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_0_cdu_apollo0.usb4_phy_common_reg','(path_to_cdu_apollo_usb4_phy_common_reg')
+                lines[line_num] = lines[line_num].replace('(sv.socket0.soc.taps.dfx_par_iom_taplinknw_phy_fia_0_mg00.crsel','(path_to_mg_tap_crsel')
+                lines[line_num] = lines[line_num].replace('"TCSS/soc_regs_wrapper/tcss_phy_env_i_0','f"TCSS/soc_regs_wrapper/tcss_phy_env_i_{str(phy_index)}')
 
         file.close()
         #file_path1 = file_path.replace('.py','_CONVERTED.py')
@@ -121,7 +129,8 @@ def tcss_add_phy_index_and_post_boot(output_dir,conversion_time,CPUgen):
 
     folder_path = output_dir
     # get all files in the folder
-    files = list_files_in_folder(folder_path)
+    #files = list_files_in_folder(folder_path)  ### LEGACY
+    files = [file_path_]
     # filter files based on their name pattern
     pattern = r".*tc.*\.py$"
     files_to_process = [f for f in files if re.match(pattern, f)]
@@ -135,7 +144,7 @@ def tcss_add_phy_index_and_post_boot(output_dir,conversion_time,CPUgen):
             print("tcss post boot script added on: %s"%file_path)
     print("tcss_add_phy_index_and_post_boot DONE")
 
-def edp_add_post_boot(output_dir,conversion_time,CPUgen):
+def edp_add_post_boot(file_path_,output_dir,conversion_time,CPUgen):
     def rewrite_file(file):
         lines = file.readlines()
         i=0
@@ -180,7 +189,8 @@ def edp_add_post_boot(output_dir,conversion_time,CPUgen):
 
     folder_path = output_dir
     # get all files in the folder
-    files = list_files_in_folder(folder_path)
+    # files = list_files_in_folder(folder_path) ### LEGACY
+    files = [file_path_]
     # filter files based on their name pattern
     pattern = r".*eDP.*\.py$"
     files_to_process = [f for f in files if re.match(pattern, f)]
@@ -206,7 +216,10 @@ class run():
         CPUgen can be ['LNL' , 'MTL-P']
     """
 
-    def __init__(self,direct_reg,conversion_time,log_file_path,_week_folder_en, _input_dir, _output_dir="",CPUgen = "PTL"):
+    def __init__(self,direct_reg,conversion_time,log_file_path,_week_folder_en, _input_dir,_input_file, _output_dir="",CPUgen = "PTL"):
+        self.log_file_path = log_file_path
+        self.conversion_time = conversion_time
+        self.input_file = _input_file
         self.input_dir = _input_dir
         if _output_dir == "":
             self.output_dir = _input_dir + "\\TRANSLATED"
@@ -217,13 +230,8 @@ class run():
         self.CPUgen = CPUgen
         self.direct_reg = direct_reg
         self.run_translation()
-        print('') # prints newline seperator
-        tcss_add_phy_index_and_post_boot(self.output_dir,conversion_time,self.CPUgen)
-        print('') # prints newline seperator
-        edp_add_post_boot(self.output_dir,conversion_time,self.CPUgen)
-        print('') # prints newline seperator
-        print(log_file_path)
-
+        tcss_add_phy_index_and_post_boot(_input_file,self.output_dir,self.conversion_time,self.CPUgen)
+        edp_add_post_boot(_input_file,self.output_dir,self.conversion_time,self.CPUgen)
 
     def run_translation(self):
         # root_dirs = [ r"C:\pythonsv\lunarlake\debug\domains\hsio_dv\Display",
@@ -246,14 +254,17 @@ class run():
         #sys.path.append(r"C:\hamo_git\sio\LNL\sio_dv\spfs_source")
         import lnl_spf_2_pythonsv_script_BlackBox_Advanced as C1converter
 
-
-        # use the os.walk() function to traverse the directory tree
-        for dir_path, subdirs, files in os.walk(self.input_dir):
-            # loop through all the files in the current directory
-            for file_name in files:
-                # use the os.path.join() function to get the full path to the file
-                file_path = os.path.join(dir_path, file_name)
-                A = C1converter.Command(self.input_dir, file_path, self.output_dir, self.CPUgen, self.direct_reg)
-                # taps = list(A.returnTapsUsed())
-                # taps.insert(0,file_name)
-                # writer.writerow(taps)
+        if self.input_file:
+            input_dir = os.path.dirname(self.input_file)
+            A = C1converter.Command(input_dir, self.input_file, self.output_dir, self.CPUgen, self.direct_reg)
+        else:
+            # use the os.walk() function to traverse the directory tree
+            for dir_path, subdirs, files in os.walk(self.input_dir):
+                # loop through all the files in the current directory
+                for file_name in files:
+                    # use the os.path.join() function to get the full path to the file
+                    file_path = os.path.join(dir_path, file_name)
+                    A = C1converter.Command(self.input_dir, file_path, self.output_dir, self.CPUgen, self.direct_reg)
+                    # taps = list(A.returnTapsUsed())
+                    # taps.insert(0,file_name)
+                    # writer.writerow(taps)

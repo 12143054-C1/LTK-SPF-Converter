@@ -16,6 +16,8 @@ from datetime import datetime
 import threading
 from conversion_module import Converter
 
+VERSION = '2.0.2'
+
 
 class Converter_GUI():
     def __init__(self, root):
@@ -26,7 +28,7 @@ class Converter_GUI():
         # window top bar title
         self.root = root
         self.root.title("LTK SPF Converter")
-        self.root.minsize(1200, 260)  # Set the minimum window size
+        self.root.minsize(1200, 290)  # Set the minimum window size
 
         # Set the window icon
         self.set_window_icon()
@@ -44,7 +46,7 @@ class Converter_GUI():
         # Variable to hold the source type
         self.source_type = tk.StringVar(value='Folder')
         self.source_file_radiobutton = tk.Radiobutton(
-            self.source_frame, text="File", variable=self.source_type, value='file', command=self.update_combobox, state='disabled') ############### disabled in beta 1 release
+            self.source_frame, text="File", variable=self.source_type, value='File', command=self.update_combobox) ############### disabled in beta 1 release
         self.source_file_radiobutton.pack(side='left')
         self.source_folder_radiobutton = tk.Radiobutton(
             self.source_frame, text="Folder", variable=self.source_type, value='Folder', command=self.update_combobox)
@@ -80,7 +82,7 @@ class Converter_GUI():
 
         # Bottom Frame
         self.bottom_frame = tk.Frame(root)
-        self.bottom_frame.pack(fill='x', pady=5, padx=5)
+        self.bottom_frame.pack(fill='x', pady=5, padx=0)
 
         # Bottom Left frame - Options
         # make it a LabelFrame with the title 'Options'
@@ -92,7 +94,7 @@ class Converter_GUI():
         self.cpu_gen_label = tk.Label(self.spu_gen_frame, text="CPU Gen:")
         self.cpu_gen_label.pack(side='left', padx=5)
         self.cpu_gen = ttk.Combobox(self.spu_gen_frame, values=[
-                                    "PTL", "LNL", "MTL-P", "MTL1"])
+                                    "PTL", "LNL"])
         self.cpu_gen.pack(padx=5)
         self.cpu_gen.set("PTL")
         # add 'Use itpp Comments' tick button to options frame
@@ -105,21 +107,25 @@ class Converter_GUI():
         self.buttons_frame = tk.Frame(self.bottom_frame)
         self.buttons_frame.pack(side='right', padx=10)
         self.convert_button = tk.Button(
-            self.buttons_frame, text="Convert", command=self.convert)
-        self.convert_button.pack(side='right', padx=10)
+            self.buttons_frame, text="Convert", command=self.convert, width=7)
+        self.convert_button.pack(side='top', pady=2)
+        self.stop_requested = False
+        self.cancel_button = tk.Button(
+            self.buttons_frame, text="Cancel", command=self.stop_convertion ,width=7,state='disabled')
+        self.cancel_button.pack(side='top', pady=2)
 
-        # Progress Bar
+        # Progress Bar  ########################################################
         self.progress = tk.DoubleVar()
         self.progress_bar = ttk.Progressbar(
             root, variable=self.progress, maximum=100)
-        # self.progress_bar.pack(fill='x', padx=5, pady=5) progress bar not shown. WIP!
+        self.progress_bar.pack(fill='x', padx=5, pady=5)
 
         # Floor Frame
         self.floor_frame = tk.Frame(root)
         self.floor_frame.pack(fill='x', pady=5, padx=5, side='bottom', anchor='s')
 
         # Software Version
-        self.version_label = tk.Label(self.floor_frame, text="2.0.1b1")
+        self.version_label = tk.Label(self.floor_frame, text=VERSION)
         self.version_label.pack(side='left')
 
         # Copyright
@@ -145,9 +151,14 @@ class Converter_GUI():
 
     def update_source_history_on_select(self):
         selected = self.source_select_combobox.get()
+        history = ''
         if selected:
-            self.update_history(self.source_file_history if self.source_type.get(
-            ) == 'File' else self.source_folder_history, selected)
+            if self.source_type.get() == 'File' and os.path.isfile(selected):
+                history = self.source_file_history
+            elif self.source_type.get() == 'Folder' and os.path.isdir(selected):
+                history = self.source_folder_history
+            if history:
+                self.update_history(history, selected)
             self.update_combobox()  # Refresh the combobox with updated history
 
     def update_dest_history_on_select(self):
@@ -237,15 +248,15 @@ class Converter_GUI():
         # Function to handle file/folder selection
         if self.source_type.get() == 'File':
             file_path = filedialog.askopenfilename()
-            if file_path:
+            if os.path.isfile(file_path):
                 self.source_file_history.insert(
                     0, file_path)  # Update source file history
                 self.update_combobox()
                 self.source_select_combobox.set(file_path)
                 base_path = os.path.dirname(file_path)
-        else:
+        else: #if it's a Folder
             folder_path = filedialog.askdirectory()
-            if folder_path:
+            if os.path.isdir(folder_path):
                 self.source_folder_history.insert(
                     0, folder_path)  # Update source folder history
                 self.update_combobox()
@@ -342,12 +353,23 @@ class Converter_GUI():
         cpu_gen = self.cpu_gen.get()
         use_itpp = self.use_itpp.get()
 
-        # Create an instance of the Converter class
-        converter = Converter(source_path, dest_path, cpu_gen, use_itpp, self.progress_callback)
+        self.stop_requested = False
 
+        # Create an instance of the Converter class
+        converter = Converter(
+            source_path,
+            dest_path,
+            cpu_gen,
+            use_itpp,
+            self.progress_callback,
+            lambda: self.stop_requested
+            )
         # Run the conversion in a separate thread
-        conversion_thread = threading.Thread(target=converter.run_conversion)
-        conversion_thread.start()
+        self.conversion_thread = threading.Thread(target=converter.run_conversion)
+        self.conversion_thread.start()
+
+        self.cancel_button.configure(state='normal')
+        self.convert_button.configure(state='disabled')
 
         # Display conversion details
         messagebox.showinfo("Convert",  f"Convert button clicked.\n"
@@ -355,6 +377,12 @@ class Converter_GUI():
                                         f"Destination: {dest_path}\n"
                                         f"CPU Gen: {cpu_gen}\n"
                                         f"Use itpp Comments: {'Yes' if use_itpp else 'No'}")
+    
+    def stop_convertion(self):
+        self.stop_requested = True  # Signal the thread to stop
+        #self.conversion_thread.join()  # Wait for the thread to finish
+        self.cancel_button.configure(state='disabled')
+        self.convert_button.configure(state='normal')
 
 
 if __name__ == "__main__":
