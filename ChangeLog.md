@@ -2,16 +2,16 @@
 
 **2.1.0**
 
-- Improved the error handling mechanism in `LTK_SPF_Converter.py`.
-- Added functionality to write logs to a logfile.
-- Updated error detection to identify lines with `>>> Error:` in the console log instead of `Tap not found`.
-- Updated the Help files.
-- Adjusted the CPU generation options to only include `PTL` and `LNL`.
-- Updated the `LTK_SPF_Converter.py` with new functionalities like sending emails with attachments and custom error dialogs.
-- Introduced a progress bar to the GUI in `LTK_SPF_Converter.py`.
+- Improved error handling in `LTK_SPF_Converter.py`.
+- Added logging functionality.
+- Enhanced error detection in console logs.
+- Updated Help files.
+- Adjusted CPU generation options to only include `PTL` and `LNL`.
+- Added new features in `LTK_SPF_Converter.py`, including sending emails with attachments and custom error dialogs.
+- Introduced a progress bar to the GUI.
 - Enabled file source type selection.
 - Adjusted the minimum window size for the GUI.
-- Added a cancel button and implemented a mechanism to stop the conversion process.
+- Added a cancel button to stop the conversion process.
 - Added 'Email Me' button.
 
 **2.0.7**
@@ -20,13 +20,12 @@
 
 **2.0.6**
 
-- Minor update.
-- Changes made to `Tools/run_function_from_module.py`.
+- Minor update and bug fixes.
 
 **2.0.5**
 
 - Updated the `.gitignore` file.
-- Other scripting-related changes.
+- Scripting-related changes.
 
 **2.0.4**
 
@@ -35,7 +34,6 @@
 **2.0.3**
 
 - General updates to improve functionality.
-- Modifications include changes to `.vscode/settings.json`.
 
 **2.0.2**
 
@@ -43,9 +41,9 @@
 
 **2.0.1**
 
-- Changes aimed at fixing issues in history handling.
+- Fixed issues in history handling.
 
 **2.0.0**
 
-- Initial commit setting up the project with a basic structure and initial files.
+- Initial commit with basic structure and initial files.
 - Included initial help files and main application scripts.
