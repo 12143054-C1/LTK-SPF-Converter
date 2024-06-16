@@ -12,7 +12,7 @@
 - Enabled file source type selection.
 - Adjusted the minimum window size for the GUI.
 - Added a cancel button and implemented a mechanism to stop the conversion process.
-- Added 'Email Me' button
+- Added 'Email Me' button.
 
 **2.0.7**
 
