@@ -27,7 +27,6 @@ def main():
 
     # Get the current working directory
     base_dir = os.path.dirname(os.path.abspath(__file__))
-
     # Define the module name and source paths relative to the current directory
     module_name = "LTK_SPF_Converter"
     icon_path = os.path.join(base_dir, "crown.ico")

@@ -23,9 +23,9 @@ def run_converted_modules(folder_path):
             # Check if the module has the 'runConverted' function and run it
             if hasattr(module, 'runConverted'):
                 print(f"Running 'runConverted' from module '{module_name}'")
-                module.runConverted()
+                module.runConverted(post_boot_config = False)
             else:
                 print(f"Module '{module_name}' does not have a 'runConverted' function")
 
 # Example usage:
-run_converted_modules('/path/to/your/folder')
+run_converted_modules(r"C:\Users\mvhlab\Downloads\SPFs\TCSS\LTK_16-06-24_16-44-36")

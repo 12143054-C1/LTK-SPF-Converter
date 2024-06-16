@@ -128,12 +128,13 @@ def tcss_add_phy_index_and_post_boot(file_path_,output_dir,conversion_time,CPUge
         return file_list
 
     folder_path = output_dir
-    # get all files in the folder
-    #files = list_files_in_folder(folder_path)  ### LEGACY
     files = [file_path_]
-    # filter files based on their name pattern
-    pattern = r".*tc.*\.py$"
-    files_to_process = [f for f in files if re.match(pattern, f)]
+    files_to_process = []
+    for file in files:
+        file = os.path.basename(file)
+        file = file.replace(".spf",".py")
+        if 'tcss' in file or 'tc0' in file or 'tc1' in file or 'tc2' in file or 'tc3' in file:
+            files_to_process.append(file)
     # process each file
     for file in files_to_process:
         file_path = os.path.join(folder_path, file)
