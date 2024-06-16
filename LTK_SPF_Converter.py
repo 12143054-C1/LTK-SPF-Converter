@@ -466,16 +466,17 @@ class Converter_GUI():
     
     def on_conversion_complete(self):
         # This method will be called when conversion is complete
-        # Write log to logfile
+        
         # Schedule error handling to be run in the main thread
         self.root.after(0, self.handle_error)
 
     def handle_error(self):
+        # Write log to logfile
         self.console_log = self.console_text.get("1.0", "end-1c")
         self.log_path = os.path.join(self.dest_path, 'conversion_log.txt')
         with open(self.log_path, 'a') as logfile:
             logfile.write(self.console_log)
-        if 'Tap not found' in self.console_log:  # Problem with conversion!
+        if '>>> Error:' in self.console_log:  # Problem with conversion!
             self.attachment_paths = []
             lines  = self.console_log.split('\n')
             for i,line in enumerate(lines):

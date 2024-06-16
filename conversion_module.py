@@ -29,49 +29,56 @@ class Converter:
             files_ = os.listdir(self.source_path)
             files = [file for file in files_ if file.lower().endswith('.spf')]
             total_files = len(files)
-            for i, file in enumerate(files):
-                if self.stop_callback():
-                    print("STOPPED !!!!")
-                    ## Open the destination folder after conversion
-                    if os.path.exists(self.dest_path):
-                        self.dest_path = self.dest_path.replace("/","\\")
-                        ## Open the folder using the default file manager
-                    if os.name == "nt":  # Windows
-                        subprocess.Popen(f'explorer "{self.dest_path}"')
-                    elif os.name == "posix":  ## Linux or macOS
-                        subprocess.Popen(["xdg-open", destination_entry.get()])
-                    progress = 0
-                    self.progress_callback(progress)
-                    return
-                ## Folder conversion function here
-                spf2sv_converter.run(
-                    direct_reg= self.use_itpp,
-                    conversion_time= self.conversion_time,
-                    log_file_path= os.path.join(self.dest_path, 'conversion_log.txt'),
-                    _week_folder_en= False,
-                    _input_dir= self.source_path,
-                    _input_file = os.path.join(self.source_path,file),
-                    _output_dir= self.dest_path,
-                    CPUgen= self.cpu_gen
-                )
-                if self.progress_callback:
-                    progress = int((i + 1) / total_files * 100)
-                    self.progress_callback(progress)
+            if total_files == 0:
+                print(">>> Error: no valid files found!")
+            else:
+                for i, file in enumerate(files):
+                    if self.stop_callback():
+                        print("STOPPED !!!!")
+                        ## Open the destination folder after conversion
+                        if os.path.exists(self.dest_path):
+                            self.dest_path = self.dest_path.replace("/","\\")
+                            ## Open the folder using the default file manager
+                        if os.name == "nt":  # Windows
+                            subprocess.Popen(f'explorer "{self.dest_path}"')
+                        elif os.name == "posix":  ## Linux or macOS
+                            subprocess.Popen(["xdg-open", destination_entry.get()])
+                        progress = 0
+                        self.progress_callback(progress)
+                        return
+                    ## Folder conversion function here
+                    spf2sv_converter.run(
+                        direct_reg= self.use_itpp,
+                        conversion_time= self.conversion_time,
+                        log_file_path= os.path.join(self.dest_path, 'conversion_log.txt'),
+                        _week_folder_en= False,
+                        _input_dir= self.source_path,
+                        _input_file = os.path.join(self.source_path,file),
+                        _output_dir= self.dest_path,
+                        CPUgen= self.cpu_gen
+                    )
+                    if self.progress_callback:
+                        progress = int((i + 1) / total_files * 100)
+                        self.progress_callback(progress)
         else:
             ## File conversion function here
             # Simulate conversion for a single file
-            spf2sv_converter.run(
-                    direct_reg= self.use_itpp,
-                    conversion_time= self.conversion_time,
-                    log_file_path= os.path.join(self.dest_path, 'conversion_log.txt'),
-                    _week_folder_en= False,
-                    _input_dir= os.path.dirname(self.source_path),
-                    _input_file = self.source_path,
-                    _output_dir= self.dest_path,
-                    CPUgen= self.cpu_gen
-                )
-            if self.progress_callback:
-                self.progress_callback(100)
+            files = [file for file in [self.source_path] if file.lower().endswith('.spf')]
+            if not files:
+                print(">>> Error: Invalid file!")
+            else:
+                spf2sv_converter.run(
+                        direct_reg= self.use_itpp,
+                        conversion_time= self.conversion_time,
+                        log_file_path= os.path.join(self.dest_path, 'conversion_log.txt'),
+                        _week_folder_en= False,
+                        _input_dir= os.path.dirname(self.source_path),
+                        _input_file = self.source_path,
+                        _output_dir= self.dest_path,
+                        CPUgen= self.cpu_gen
+                    )
+                if self.progress_callback:
+                    self.progress_callback(100)
         
         with open(os.path.join(self.dest_path, 'conversion_log.txt'), 'a') as f:
             f.write(f"Source: {self.source_path}\n")

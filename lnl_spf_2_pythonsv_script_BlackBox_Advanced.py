@@ -318,6 +318,7 @@ class Command():
                 print(f"row number: {row_num}")
                 print(self.prev_row)
                 print(row)
+                print(">>> Error: No reg names!")
                 raise error_msg("no reg names")
 
         if row.startswith(r"focus_tap"):
@@ -335,7 +336,7 @@ class Command():
                     self.focus_tap_sv.append(self.focus_tap_dict[tap])
                     self.taps_used.add(self.focus_tap_dict[tap])
                 except KeyError as e:
-                    print(" Tap not found: " + str(e))
+                    print(" >>> Error: Tap not found: " + str(e))
                     context_search_and_print(tap, self.Root_Path, 10)
                     return 1
                 
