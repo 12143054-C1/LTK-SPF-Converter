@@ -184,23 +184,25 @@ class Command():
                 }
         elif self.CPU_Gen == "PTL":
             self.focus_tap_dict = {
-                r'DFX_PARISCLK_STAP'                               : r'soc.taps.dfx_parisclk.',
-                r'IPU_STAP'                                        : r'soc.taps.ipu.',
-                r'ISCLK_STAP'                                      : r'soc.taps.isclk.',
-                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_0_MG0_TAP0'        : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_0_mg00.',
-                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_0_MG1_TAP0'        : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_0_mg10.',
-                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_1_MG0_TAP0'        : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_1_mg00.',
-                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_1_MG1_TAP0'        : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_1_mg10.',
-                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_0_CDU_APOLLO0_TAP' : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_0_cdu_apollo0.',
-                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_0_CDU_APOLLO1_TAP' : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_0_cdu_apollo1.',
-                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_1_CDU_APOLLO0_TAP' : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_1_cdu_apollo0.',
-                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_1_CDU_APOLLO1_TAP' : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_1_cdu_apollo1.',
-                r'TPSB_STAP'                                       : r'soc.taps.tpsb.',
-                r'DFX_PAR_IOM_TAPLINKNW_IOM_IOM_AONGTAP'           : r'soc.taps.dfx_par_iom_taplinknw_iom_iom_aong.',
-                r'GLUE_DFX_PAR_IOM_TAPLINKNW_PHY_FIA_0_MG0_TAP0'   : r'soc.taps.cltap.', #### !!!!!! IN QUESTION NEED TO APPROVE WITH MITRANI
-                r'GLUE_DFX_PAR_IOM_TAPLINKNW_PHY_FIA_0_MG1_TAP0'   : r'soc.taps.cltap.', #### !!!!!! IN QUESTION NEED TO APPROVE WITH MITRANI
-                r'GLUE_DFX_PAR_IOM_TAPLINKNW_PHY_FIA_1_MG0_TAP0'   : r'soc.taps.cltap.', #### !!!!!! IN QUESTION NEED TO APPROVE WITH MITRANI
-                r'GLUE_DFX_PAR_IOM_TAPLINKNW_PHY_FIA_1_MG1_TAP0'   : r'soc.taps.cltap.', #### !!!!!! IN QUESTION NEED TO APPROVE WITH MITRANI
+                r'DFX_PARISCLK_STAP'                                              : r'soc.taps.dfx_parisclk.',
+                r'IPU_STAP'                                                       : r'soc.taps.ipu.',
+                r'ISCLK_STAP'                                                     : r'soc.taps.isclk.',
+                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_0_MG0_TAP0'                       : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_0_mg00.',
+                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_0_MG1_TAP0'                       : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_0_mg10.',
+                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_1_MG0_TAP0'                       : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_1_mg00.',
+                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_1_MG1_TAP0'                       : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_1_mg10.',
+                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_0_CDU_APOLLO0_TAP'                : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_0_cdu_apollo0.',
+                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_0_CDU_APOLLO1_TAP'                : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_0_cdu_apollo1.',
+                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_1_CDU_APOLLO0_TAP'                : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_1_cdu_apollo0.',
+                r'DFX_PAR_IOM_TAPLINKNW_PHY_FIA_1_CDU_APOLLO1_TAP'                : r'soc.taps.dfx_par_iom_taplinknw_phy_fia_1_cdu_apollo1.',
+                r'TPSB_STAP'                                                      : r'soc.taps.tpsb.',
+                r'DFX_PAR_IOM_TAPLINKNW_IOM_IOM_AONGTAP'                          : r'soc.taps.dfx_par_iom_taplinknw_iom_iom_aong.',
+                r'GLUE_DFX_PAR_IOM_TAPLINKNW_PHY_FIA_0_MG0_TAP0'                  : r'soc.taps.cltap.', #### !!!!!! IN QUESTION NEED TO APPROVE WITH MITRANI
+                r'GLUE_DFX_PAR_IOM_TAPLINKNW_PHY_FIA_0_MG1_TAP0'                  : r'soc.taps.cltap.', #### !!!!!! IN QUESTION NEED TO APPROVE WITH MITRANI
+                r'GLUE_DFX_PAR_IOM_TAPLINKNW_PHY_FIA_1_MG0_TAP0'                  : r'soc.taps.cltap.', #### !!!!!! IN QUESTION NEED TO APPROVE WITH MITRANI
+                r'GLUE_DFX_PAR_IOM_TAPLINKNW_PHY_FIA_1_MG1_TAP0'                  : r'soc.taps.cltap.', #### !!!!!! IN QUESTION NEED TO APPROVE WITH MITRANI
+                r'RGN_TAP_TEST_PORT_ST'                                           : r'cdie.taps.cdie_rgn_tap_test_port_st.',
+                r'RGN_TAP_TEST_PORT_ST_MEN_SIB_REG_HPTP_SYSTEM_CHAIN_layout_inst' : r'cdie.taps.cdie_rgn_tap_test_port_st.men_sib_reg_hptp_system_chain.'
                 }
             ### I M P O R T A N T !!!!!!!! YOU NEED TO ADD '.' AT THE END OF THE TRANSLATED TAP NAME, AND ALSO PAY ATTENTION TO THE FIRST ELEMENT IN THE HIERARCHY.
         self.taps_used = set()
@@ -214,6 +216,7 @@ class Command():
             self.iom_block = True
         else:
             self.iom_block = False
+        self.focus_tap_rf_flag = False
         self.run()
 
 
@@ -321,7 +324,28 @@ class Command():
                 print(">>> Error: No reg names!")
                 raise error_msg("no reg names")
 
-        if row.startswith(r"focus_tap"):
+        if row.startswith(r"focus_tap_rf "):
+            self.focus_tap_rf_flag = True
+            # Set focus tap. goes to: sv.socket0.soc.taps.<focus_tap_sv>.register
+            self.focus_tap_sv = []
+            taps = row.replace("focus_tap_rf ","").split(";")[0]
+            if " " in taps:
+                taps = taps.split(" ")
+            elif "," in taps:
+                taps = taps.split(",")
+            else:
+                taps = [taps]
+            for tap in taps:
+                try:
+                    self.focus_tap_sv.append(self.focus_tap_dict[tap])
+                    self.taps_used.add(self.focus_tap_dict[tap])
+                except KeyError as e:
+                    print(" >>> Error: Tap not found: " + str(e))
+                    context_search_and_print(tap, self.Root_Path, 10)
+                    return 1
+
+        elif row.startswith(r"focus_tap "):
+            self.focus_tap_rf_flag = False
             # Set focus tap. goes to: sv.socket0.soc.taps.<focus_tap_sv>.register
             self.focus_tap_sv = []
             taps = row.replace("focus_tap ","").split(";")[0]
@@ -363,7 +387,11 @@ class Command():
                     self.prev_row = row
                     return
             ##save reg to param_read
-            self.reg_name = row.split(" ")[1].split("[")[0].split("->")[0].replace(" ","").lower()
+            # Handle HPTP protocol set
+            if self.focus_tap_rf_flag: # For now, used in HPTP protocol
+                self.reg_name = row.split(" ")[1].split("[")[0].split("->")[0].replace("HPTP_SYSTEM_SIB.","HPTP_SYSTEM__").replace("_SIB.sib_reg","").replace(".","_").lower()
+            else:
+                self.reg_name = row.split(" ")[1].split("[")[0].split("->")[0].replace(" ","").lower()
             if self.prev_reg != self.reg_name:
                 if self.flush_flag == False and self.prev_reg != "":
                     for tap in range(len(self.focus_tap_sv)):
@@ -400,12 +428,13 @@ class Command():
                         '''
 
                     self.printC1("reg{0} = svReg({1})".format(tap,self.full_reg_name),output)
-                        
+
             ##get the indexes of the bits we want to write
             if "'b" in row or "'h" in row:
-                data = "0" + row.split("=")[1].split(";")[0].split(r"'")[1].replace("h","x")
+                data = "0" + row.split("=")[1].split(";")[0].split(r"'")[1].replace("h","x").strip()
             else: 
                 data = hex(int(row.split("=")[1].split(";")[0]))
+
             if "[" in row.split(r"#")[0].split(r"=")[0]:
                 indexes = row.split("[")[1].split("]")[0]
                 if ":" in indexes:
@@ -415,8 +444,11 @@ class Command():
                 for tap in range(len(self.focus_tap_sv)):
                     self.printC1("""reg%s.storeField(%s,"%s")""" %(tap,sv_field,data),output)
             elif "->" in row.split(r"#")[0].split(r"=")[0]:
-                reg_and_field = row.replace("set ", "").split("=")[0].replace(" ","")
-                sv_field = reg_and_field.split("->")[1].lower()
+                if self.focus_tap_rf_flag: 
+                    sv_field = f'.{row.split(".")[-1]}'.replace(".CTRL_","").replace(".CAL_","").split("=")[0].strip().lower()
+                else:
+                    reg_and_field = row.replace("set ", "").split("=")[0].replace(" ","")
+                    sv_field = reg_and_field.split("->")[1].lower()
                 for tap in range(len(self.focus_tap_sv)):
                     self.printC1("""reg%s.storeField("%s","%s")""" %(tap,sv_field,data),output)
             self.flush_flag = False
@@ -771,8 +803,14 @@ class svReg():
                     self.param_read_arr[t] = '0'
                 i += 1
         else:
-            bit_offset = getattr(self.regName,fieldName).info['bitOffset']
-            index_len = getattr(self.regName,fieldName).info['bitWidth']
+            try:
+                bit_offset = getattr(self.regName,fieldName).info['bitOffset']
+            except:
+                bit_offset = getattr(self.regName,fieldName).info['lowerbit']
+            try:
+                index_len = getattr(self.regName,fieldName).info['bitWidth']
+            except:
+                index_len = getattr(self.regName,fieldName).info['numbits']
             index = (int(str(bit_offset)) + int(str(index_len)) -1 ,  int(str(bit_offset)))
             data_arr = bitfield(data)
             if data_arr == ['0']:
@@ -803,8 +841,14 @@ class svReg():
                 data_arr = data_arr[ 0 : fieldName[2] - fieldName[1] + 1 ]
                 append = False
         else:
-            bit_offset = getattr(self.regName,fieldName).info['bitOffset']
-            index_len = getattr(self.regName,fieldName).info['bitWidth']
+            try:
+                bit_offset = getattr(self.regName,fieldName).info['bitOffset']
+            except:
+                bit_offset = getattr(self.regName,fieldName).info['lowerbit']
+            try:
+                index_len = getattr(self.regName,fieldName).info['bitWidth']
+            except:
+                index_len = getattr(self.regName,fieldName).info['numbits']
             index = (int(str(bit_offset)) + int(str(index_len)) -1 ,  int(str(bit_offset)))
         if append:
             while len(data_arr) < index_len:
@@ -825,8 +869,14 @@ class svReg():
                 index = (int(str(bit_offset)) + int(str(index_len)) -1 ,  int(str(bit_offset)))
                 index =(index[0]+ fieldName[1], index[0]+fieldName[2]+1)
         else:
-            bit_offset = getattr(self.regName,fieldName).info['bitOffset']
-            index_len = getattr(self.regName,fieldName).info['bitWidth']
+            try:
+                bit_offset = getattr(self.regName,fieldName).info['bitOffset']
+            except:
+                bit_offset = getattr(self.regName,fieldName).info['lowerbit']
+            try:
+                index_len = getattr(self.regName,fieldName).info['bitWidth']
+            except:
+                index_len = getattr(self.regName,fieldName).info['numbits']
             index = (int(str(bit_offset)) + int(str(index_len)) -1 ,  int(str(bit_offset)))
         actualData = bitArr2hex(self.param_read_arr[index[1]:index[0]+1])
         print("%s = %s" % (self.regNameStr, actualData))
@@ -866,11 +916,15 @@ def runConverted():
 def main():
     ############################################################################
 
-    for dirpath, dirnames, filenames in os.walk("C:\SPFs"):           ###   "C:\pythonsv\lunarlake\debug\domains\hsio_dv\Display"
+    for dirpath, dirnames, filenames in os.walk(r"C:\Users\szusin\OneDrive - Intel Corporation\Documents\PTL\SPFs\HPTP"):   
         for filename in [f for f in filenames if (f.endswith(".spf") or f.endswith(".SPF"))]:
-            if "ate_dptx_upcs_top_external_loopback_tx1_rx2_HDMI_6G_COLORDEPTH.spf" in filename:
-                input_name = dirpath+"\\"+filename
-                A = Command(input_name)
+            input_name = dirpath+"\\"+filename
+            A = Command(
+                _Root_Path= dirpath,
+                _FilePath= input_name,
+                _Output_Root_Dir= dirpath+"\\OUTPUT",
+                _CPU_Gen= 'PTL'
+            )
     end_string = """
     ###########################
     #########---END---#########
