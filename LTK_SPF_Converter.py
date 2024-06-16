@@ -208,10 +208,12 @@ class Converter_GUI():
         self.copyright_label = tk.Label(
             self.floor_frame, text="© 2024 Sivan Zusin")
         self.copyright_label.pack(side='right')
+        # Email Me
+        self.email_me_button = tk.Button(self.floor_frame, text="Email Me", command=self.email_me)
+        self.email_me_button.pack(side='right', padx=2)
 
         # Print Hello message in the terminal
-        message = """
-      ___       __   __         ___    ___  __     ___       ___         ___          __   __   ___     __   __             ___  __  ___  ___  __  
+        message = """      ___       __   __         ___    ___  __     ___       ___         ___          __   __   ___     __   __             ___  __  ___  ___  __  
 |  | |__  |    /  ` /  \  |\/| |__      |  /  \     |  |__| |__     |     |  |__/    /__` |__) |__     /  ` /  \ |\ | \  / |__  |__)  |  |__  |__) 
 |/\| |___ |___ \__, \__/  |  | |___     |  \__/     |  |  | |___    |___  |  |  \    .__/ |    |       \__, \__/ | \|  \/  |___ |  \  |  |___ |  \ 
 
@@ -289,7 +291,7 @@ Use Menu -> Help for help.
         menubar.add_cascade(label="Menu", menu=ltk_menu)
         self.root.config(menu=menubar)
 
-    def show_help(self):
+    def show_help(self,topic=""):
         # Get the directory of the current script
         script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -299,8 +301,13 @@ Use Menu -> Help for help.
         if chm_files:
             # If there are multiple .chm files, choose the first one
             chm_file = os.path.join(script_dir, chm_files[0])
+            # Append the topic to the CHM file path if specified
+            if topic:
+                chm_path_with_topic = f"mk:@MSITStore:{chm_file}::{topic}"
+            else:
+                chm_path_with_topic = chm_file
             # Open the CHM file using the default CHM viewer
-            subprocess.Popen(["hh.exe", chm_file])
+            subprocess.Popen(["hh.exe", chm_path_with_topic])
         else:
             messagebox.showerror("Error", "Help file not found!")
 
@@ -420,9 +427,6 @@ Use Menu -> Help for help.
         self.dest_select_combobox['values'] = self.dest_history
 
     def convert(self):
-        self.console_text.configure(state='normal')  # Temporarily enable the widget for editing
-        self.console_text.delete("1.0", "end")  # Delete all content from the start to the end
-        self.console_text.configure(state='disabled')  # Disable the widget again to make it read-only
         # Check if source and destination are selected, if not raise an error
         self.source_path = self.source_select_combobox.get()
         self.dest_path = self.dest_select_combobox.get()
@@ -435,6 +439,11 @@ Use Menu -> Help for help.
         if not self.dest_path:
             messagebox.showerror("Error", "Destination not selected!")
             return
+
+        # Reset console
+        self.console_text.configure(state='normal')  # Temporarily enable the widget for editing
+        self.console_text.delete("1.0", "end")  # Delete all content from the start to the end
+        self.console_text.configure(state='disabled')  # Disable the widget again to make it read-only
 
         # update and save history
         if os.path.isfile(self.source_path):
@@ -497,7 +506,7 @@ Use Menu -> Help for help.
             if response == "send_log":
                 self.send_log_to_developer(self.log_path)
             elif response == "help":
-                self.show_help()
+                self.show_help_on_fail()
         else:
             messagebox.showinfo("Conversion Complete", "The file conversion process has finished.")
 
@@ -514,10 +523,20 @@ Use Menu -> Help for help.
         body = "This is an automatically generated Email. The Log file and a sample of the problematic SPF files will be sent to the developer for debugging. A fixed will be soon provided to you.\n\nThanks."
         self.attachment_paths.append(log_path)
         send_email_with_attachments(to_email, subject, body, self.attachment_paths)
+    
+    def email_me(self):
+        # Build the command to run the VBScript
+        command = [
+            'cscript.exe',
+            '//NoLogo',  # Suppress script engine logo
+            'compose_user_email.vbs'  # Path to the VBScript
+        ]
+        # Run the command
+        subprocess.run(command)
 
-    def show_help(self):
-        # Function to show help information
-        messagebox.showinfo("Help", "Please contact support@example.com for help with conversion issues.")
+
+    def show_help_on_fail(self):
+        self.show_help("/on_fail.html")
 
     def stop_convertion(self):
         self.stop_requested = True  # Signal the thread to stop

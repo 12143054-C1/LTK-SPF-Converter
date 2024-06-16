@@ -13,6 +13,10 @@
 		<param name="Local" value="index.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Converting Files">
+		<param name="Local" value="convert.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Selecting Input File/Folder">
 		<param name="Local" value="select_file.html">
 		</OBJECT>
@@ -25,8 +29,8 @@
 		<param name="Local" value="conversion_options.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Converting Files">
-		<param name="Local" value="convert.html">
+		<param name="Name" value="Handling Conversion Faliures">
+		<param name="Local" value="on_fail.html">
 		</OBJECT>
 </UL>
 </BODY></HTML>
