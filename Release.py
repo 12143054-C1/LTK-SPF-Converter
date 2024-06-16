@@ -35,6 +35,7 @@ def main():
     history_file = os.path.join(base_dir, "ltk_spf_history.csv")
     script_path = os.path.join(base_dir, f"{module_name}.py")
     email_sender_path = os.path.join(base_dir, "compose_email.vbs")
+    user_email_sender_path = os.path.join(base_dir, "compose_user_email.vbs")
 
     # Define the output directory relative to the current directory
     output_dir = os.path.join(base_dir, "Release", f"{module_name}_{version_number}")
@@ -49,6 +50,7 @@ def main():
     shutil.copy(icon_path, output_dir)
     shutil.copy(help_file, output_dir)
     shutil.copy(email_sender_path, output_dir)
+    shutil.copy(user_email_sender_path, output_dir)
 
     # Create empty history file
     with open(os.path.join(output_dir,"ltk_spf_history.csv"),'w') as h:
