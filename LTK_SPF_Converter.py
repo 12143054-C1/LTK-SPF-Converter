@@ -209,6 +209,16 @@ class Converter_GUI():
             self.floor_frame, text="© 2024 Sivan Zusin")
         self.copyright_label.pack(side='right')
 
+        # Print Hello message in the terminal
+        message = """
+      ___       __   __         ___    ___  __     ___       ___         ___          __   __   ___     __   __             ___  __  ___  ___  __  
+|  | |__  |    /  ` /  \  |\/| |__      |  /  \     |  |__| |__     |     |  |__/    /__` |__) |__     /  ` /  \ |\ | \  / |__  |__)  |  |__  |__) 
+|/\| |___ |___ \__, \__/  |  | |___     |  \__/     |  |  | |___    |___  |  |  \    .__/ |    |       \__, \__/ | \|  \/  |___ |  \  |  |___ |  \ 
+
+Use Menu -> Help for help.
+"""
+        print(message)
+
     def set_window_icon(self):
         # Get the absolute path to the directory containing this script
         script_dir = os.path.dirname(os.path.abspath(__file__))
