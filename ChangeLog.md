@@ -5,13 +5,14 @@
 - Improved the error handling mechanism in `LTK_SPF_Converter.py`.
 - Added functionality to write logs to a logfile.
 - Updated error detection to identify lines with `>>> Error:` in the console log instead of `Tap not found`.
-- Changes in `HELP_Compiler/LTK_SPF_HELP.chm` and `HELP_Compiler/conversion_options.html`.
+- Updated the Help files
 - Adjusted the CPU generation options to only include `PTL` and `LNL`.
 - Updated the `LTK_SPF_Converter.py` with new functionalities like sending emails with attachments and custom error dialogs.
 - Introduced a progress bar to the GUI in `LTK_SPF_Converter.py`.
 - Enabled file source type selection.
 - Adjusted the minimum window size for the GUI.
 - Added a cancel button and implemented a mechanism to stop the conversion process.
+- Added 'Email Me' button
 
 **2.0.7**
 
