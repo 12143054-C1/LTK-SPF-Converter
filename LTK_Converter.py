@@ -1,5 +1,5 @@
 #############################
-# Module name: LTK_SPF_Converter.pyw
+# Module name: LTK_Converter.pyw
 # Description: This module provides a graphical user interface for converting LTK SPF files using various options. 
 #              The GUI includes functionalities for selecting source files or folders, choosing destination folders, 
 #              setting CPU generation options, and enabling or disabling ITPP comments. The conversion process is 
@@ -77,13 +77,13 @@ class TextRedirector:
 
 class Converter_GUI():
     def __init__(self, root):
-        self.history_file = "ltk_spf_history.csv"
+        self.history_file = "ltk_history.csv"
         self.create_history_file()
         self.read_history()
 
         # window top bar title
         self.root = root
-        self.root.title("LTK SPF Converter")
+        self.root.title("LTK Converter")
         self.root.minsize(1200, 660)  # Set the minimum window size
 
         # Set the window icon
@@ -213,9 +213,10 @@ class Converter_GUI():
         self.email_me_button.pack(side='right', padx=2)
 
         # Print Hello message in the terminal
-        message = """      ___       __   __         ___    ___  __     ___       ___         ___          __   __   ___     __   __             ___  __  ___  ___  __  
-|  | |__  |    /  ` /  \  |\/| |__      |  /  \     |  |__| |__     |     |  |__/    /__` |__) |__     /  ` /  \ |\ | \  / |__  |__)  |  |__  |__) 
-|/\| |___ |___ \__, \__/  |  | |___     |  \__/     |  |  | |___    |___  |  |  \    .__/ |    |       \__, \__/ | \|  \/  |___ |  \  |  |___ |  \ 
+        message = """
+      ___       __   __         ___    ___  __     ___       ___         ___           __   __             ___  __  ___  ___  __  
+|  | |__  |    /  ` /  \  |\/| |__      |  /  \     |  |__| |__     |     |  |__/     /  ` /  \ |\ | \  / |__  |__)  |  |__  |__) 
+|/\| |___ |___ \__, \__/  |  | |___     |  \__/     |  |  | |___    |___  |  |  \     \__, \__/ | \|  \/  |___ |  \  |  |___ |  \ 
 
 Use Menu -> Help for help.
 """
@@ -256,7 +257,7 @@ Use Menu -> Help for help.
             self.update_dest_combobox()  # Refresh the combobox with updated history
 
     def create_history_file(self):
-        # Create history file named ltk_spf_history.csv if it does not exist
+        # Create history file named ltk_history.csv if it does not exist
         if not os.path.exists(self.history_file):
             with open(self.history_file, mode='w', newline='') as file:
                 writer = csv.writer(file)
@@ -519,8 +520,8 @@ Use Menu -> Help for help.
         # This is a placeholder for your actual sending logic, which might use email, FTP, HTTP POST, etc.
         print("Log would be sent to the developer.")
         to_email = "sivan.zusin@intel.com"
-        subject = "LTK SPF Conversion Problem"
-        body = "This is an automatically generated Email. The Log file and a sample of the problematic SPF files will be sent to the developer for debugging. A fixed will be soon provided to you.\n\nThanks."
+        subject = "LTK Conversion Problem"
+        body = "This is an automatically generated Email. The Log file and a sample of the problematic files will be sent to the developer for debugging. A fixed will be soon provided to you.\n\nThanks."
         self.attachment_paths.append(log_path)
         send_email_with_attachments(to_email, subject, body, self.attachment_paths)
     

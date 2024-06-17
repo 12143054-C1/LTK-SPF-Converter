@@ -20,7 +20,7 @@ def main():
             else:
                 print("Invalid version format. Please enter a valid version.")
     else:
-        with open(r'LTK_SPF_Converter.py','r') as source:
+        with open(r'LTK_Converter.py','r') as source:
             for line in source:
                 if line.startswith('VERSION = '):
                     version_number = line.split(' ')[-1].strip().strip("'")
@@ -28,10 +28,10 @@ def main():
     # Get the current working directory
     base_dir = os.path.dirname(os.path.abspath(__file__))
     # Define the module name and source paths relative to the current directory
-    module_name = "LTK_SPF_Converter"
+    module_name = "LTK_Converter"
     icon_path = os.path.join(base_dir, "crown.ico")
-    help_file = os.path.join(base_dir, "LTK_SPF_HELP.chm")
-    history_file = os.path.join(base_dir, "ltk_spf_history.csv")
+    help_file = os.path.join(base_dir, "LTK_HELP.chm")
+    history_file = os.path.join(base_dir, "ltk_history.csv")
     script_path = os.path.join(base_dir, f"{module_name}.py")
     email_sender_path = os.path.join(base_dir, "compose_email.vbs")
     user_email_sender_path = os.path.join(base_dir, "compose_user_email.vbs")
@@ -52,7 +52,7 @@ def main():
     shutil.copy(user_email_sender_path, output_dir)
 
     # Create empty history file
-    with open(os.path.join(output_dir,"ltk_spf_history.csv"),'w') as h:
+    with open(os.path.join(output_dir,"ltk_history.csv"),'w') as h:
         pass
 
     # Delete the .spec file and the build folder

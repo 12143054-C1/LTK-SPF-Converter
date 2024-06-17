@@ -1,12 +1,12 @@
 [OPTIONS]
 Compatibility=1.1 or later
-Compiled file=LTK_SPF_HELP.chm
+Compiled file=LTK_HELP.chm
 Contents file=Table of Contents.hhc
 Default topic=index.html
 Display compile progress=No
 Index file=Index.hhk
 Language=0x409 English (United States)
-Title=LTK SPF Converter
+Title=LTK Converter
 
 
 [INFOTYPES]
