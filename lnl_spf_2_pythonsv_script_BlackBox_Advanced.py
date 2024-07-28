@@ -13,6 +13,7 @@
 # IMPORTS ######################################################################
 #---------######################################################################
 import sys, os, time, math, re
+from tc_reg_to_addr import dictionary as tc_addr_to_reg_dict
 
 
 #---------######################################################################
@@ -570,19 +571,36 @@ class Command():
                     self.printC1("""print('%s')"""%row[2:-2],output)
 
         elif row.startswith("pass itpp"):
+
             x="# {}".format(row[:-2])
             self.printC1(x,output)
             # Objective: Save last REG_NAME and display it when comparing
             if self.direct_reg == True: #tap2cri: (Address 2'b00, Write 2'b01, Data 2'b01, Read 2'b11)
                 if row.startswith('pass itpp') and "tap2cri:COMPARE" in row:
                     self.compare_flag = True
+
+                # get reg name by address in PTL
+                if self.CPU_Gen == 'PTL' and row.startswith('pass itpp') and ' ADDR ' in row:
+                    if "'h" in row:
+                        self.reg_address = row.split("h")[-1].split('"')[0]
+                    elif " 0x" in row:
+                        self.reg_address = row.split(" 0x")[-1].split('"')[0]
+                    self.reg_address = '0x' + self.reg_address.lstrip('0') + ','
+                    try:
+                        self.itpp_reg_name = tc_addr_to_reg_dict[self.reg_address.lower()]
+                    except:
+                        print(self.reg_address.lower())
+                        #context_search_and_print(self.reg_address[2:-1], self.Root_Path, 10)
+
                 if row.startswith('pass itpp "#    DATA'):
                     self.data = row.split(' = ')[1].strip('";\n')
                     if self.compare_flag == True:
                         self.prev_row = row
                         return
                     #convert bin or hex to hex string
-                    if self.data[1] == 'b':
+                    if 'X' in self.data:
+                        self.data = f'0b{self.data[2:]}'
+                    elif self.data[1] == 'b':
                         self.data = hex(int(self.data[2:],2))
                     elif self.data[1] == 'h':
                         self.data = hex(int(self.data[2:],16))
@@ -597,10 +615,30 @@ class Command():
                         self.direct_command = ""
                     elif command == '11': # Read
                         self.direct_command = "r"
-                        
-                if 'REG_NAME' in row:
-                    self.direct_write_flush = False
                     
+                    # Writing commands to the converted file
+                    if self.CPU_Gen == 'PTL':
+                        # NEED TO EDIT THIS CODE
+                        self.direct_write_flush = False
+                        if self.compare_flag == True:
+                            self.printC1(f"reg0 = svReg(path_to_tcss_phy_env.dwc_usb4_phy_x4_ns.{self.itpp_reg_name})",output)
+                            reg_numbits = """reg0.regSize - 1"""
+                            self.printC1("""exec('reg0.compare((%s,0),"%s","%s","%s")'%sindex)\n    \n""" %(reg_numbits, self.data.replace("'","0"), self.itpp_reg_name, "all",r"%"),output)
+                            self.compare_flag =False
+                            self.prev_row = row
+                            return
+                        if self.direct_command == "w":
+                            self.printC1(f"exec(f'path_to_tcss_phy_env.dwc_usb4_phy_x4_ns.{self.itpp_reg_name}" + " = " + self.data + "')", output)
+                            self.direct_command = ""
+                            self.direct_write_flush = False
+                        elif self.direct_command == 'r':
+                            self.printC1(f"exec(f'path_to_tcss_phy_env.dwc_usb4_phy_x4_ns.{self.itpp_reg_name}.show()')", output)
+                        #################################################################################
+                        #################################################################################
+                        #################################################################################
+
+                if (self.CPU_Gen == 'LNL')and('REG_NAME' in row):
+                    self.direct_write_flush = False
                     self.itpp_reg_name = row.split(" = ")[1].strip('";\n')
                     pattern = r'[A-Z]{2}.*'
                     a = re.search(pattern, self.itpp_reg_name.split("=>")[1])

@@ -138,10 +138,17 @@ def tcss_add_phy_index_and_post_boot(file_path_,output_dir,conversion_time,CPUge
     # process each file
     for file in files_to_process:
         file_path = os.path.join(folder_path, file)
-        file_modification_time = os.path.getmtime(file_path)
+        try:
+            file_modification_time = os.path.getmtime(file_path)
+        except:
+            file_modification_time = os.path.getmtime(file_path.replace(".py","_DirectReg.py"))
         if file_modification_time > conversion_time:
-            with open(file_path, 'r') as file:
-                rewrite_file(file)
+            try:
+                with open(file_path, 'r') as file:
+                    rewrite_file(file)
+            except:
+                with open(file_path.replace(".py","_DirectReg.py"), 'r') as file:
+                    rewrite_file(file)
             print("tcss post boot script added on: %s"%file_path)
     print("tcss_add_phy_index_and_post_boot DONE")
 
